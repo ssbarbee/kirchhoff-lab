@@ -156,6 +156,7 @@ function init() {
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
     else if (e.key === 'f' || e.key === 'F') fs();
+    else if ((e.key === 'n' || e.key === 'N') && S.page === 'ex') newCircuit(S.level);
     else if (e.key === 'Escape' && S.page === 'ex' && S.returnTo) go(S.returnTo);
   });
   addEventListener('hashchange', () => { if (location.hash === hashLock) return; fromHash(); });

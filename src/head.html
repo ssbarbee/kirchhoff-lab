@@ -259,6 +259,8 @@ body.on-exercise .minimap { opacity: 0; transform: translateY(-8px) scale(.96); 
 .ex-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
 .ex-head h1 { font-size: clamp(28px, 3vw, 40px); }
 .ex-head .lede { margin-top: 4px; font-size: 18px; }
+.ex-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 640px) { .ex-actions { width: 100%; } .ex-actions .btn { flex: 1 1 auto; } }
 .ex-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
 .hero { padding: 8px 10px; position: relative; }
 .hero .circ { max-height: max(280px, calc(100vh - var(--top) - var(--bot) - 200px)); }
