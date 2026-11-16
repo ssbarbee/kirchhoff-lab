@@ -259,6 +259,8 @@ body.on-exercise .minimap { opacity: 0; transform: translateY(-8px) scale(.96); 
 .ex-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
 .ex-head h1 { font-size: clamp(28px, 3vw, 40px); }
 .ex-head .lede { margin-top: 4px; font-size: 18px; }
+.ex-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 640px) { .ex-actions { width: 100%; } .ex-actions .btn { flex: 1 1 auto; } }
 .ex-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
 .hero { padding: 8px 10px; position: relative; }
 .hero .circ { max-height: max(280px, calc(100vh - var(--top) - var(--bot) - 200px)); }
@@ -1635,14 +1637,13 @@ function pgExercise(el) {
       <h1>${c.nB === 1 ? 'Find the current' : 'Find every current'}</h1>
       <p class="lede">All batteries and resistors are given. Find ${unknowns} in the direction of ${c.nB === 1 ? 'its arrow' : 'the arrows'}. If a current really flows against its arrow, the answer just comes out negative.</p>
     </div>
-    <button class="btn primary big" data-act="solve">Let's solve it together <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    <div class="ex-actions"><button class="btn big" data-act="new" title="Same level, new numbers (N)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>New circuit</button><button class="btn primary big" data-act="solve">Let's solve it together <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>
     <div class="ex-grid">
       <div class="card hero"><div class="hero-host"></div></div>
       <div class="ex-side">
         <div class="card"><h3>Difficulty</h3>
           <div class="levels">${Object.entries(LEVELS).map(([n, L]) => `<button class="lvl${+n === S.level ? ' on' : ''}" data-lvl="${n}"><b>${n} · ${L.name}</b><span>${L.tag}</span></button>`).join('')}</div>
           <p class="small" style="margin:8px 0 0">${lv.blurb}</p>
-          <div class="row" style="margin-top:10px"><button class="btn" data-act="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>New circuit</button><span class="small">same level, new numbers</span></div>
         </div>
         <div class="card"><h3>Your answer</h3>
           <div class="ans">${c.branches.map((_, b) => `<div class="ans-row" data-b="${b}"><label for="ans${b}">${M(Itex(b) + ' =')}</label><input id="ans${b}" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="?" value="${S.answers[b] ?? ''}"><span>${M('\\mathrm{A}')}</span><span class="mark"></span></div>`).join('')}</div>
@@ -2411,6 +2412,7 @@ function init() {
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
     else if (e.key === 'f' || e.key === 'F') fs();
+    else if ((e.key === 'n' || e.key === 'N') && S.page === 'ex') newCircuit(S.level);
     else if (e.key === 'Escape' && S.page === 'ex' && S.returnTo) go(S.returnTo);
   });
   addEventListener('hashchange', () => { if (location.hash === hashLock) return; fromHash(); });
