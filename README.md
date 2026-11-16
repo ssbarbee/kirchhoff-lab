@@ -89,3 +89,7 @@ node test/core.test.js   # checks 6,000 generated circuits end to end
 ```
 
 Pushing to `main` redeploys the site through GitHub Pages.
+
+## License
+
+[MIT](LICENSE). Free to use, copy, change and share, in class or anywhere else.
