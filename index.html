@@ -1,0 +1,2417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kirchhoff Lab</title>
+<meta name="description" content="Learn Kirchhoff's junction and loop rules step by step with random practice circuits.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f766e'/%3E%3Cpath d='M6 16h7m6 0h7M16 6v7m0 6v7' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+/* ===================== tokens ===================== */
+:root {
+  color-scheme: light;
+  --paper: #f5f2e9; --paper-2: #ece7da; --card: #fffdf8; --card-2: #f8f5ec;
+  --ink: #1d2330; --ink-2: #454d5c; --muted: #737a88; --line: #dcd5c4; --line-2: #cbc3b0;
+  --grid: rgba(60, 50, 20, .045);
+  --wire: #262b36; --accent: #0f766e; --accent-2: #0b5d57; --accent-ink: #ffffff; --accent-soft: rgba(15, 118, 110, .1);
+  --hot: #f08c00; --good: #2b8a3e; --good-soft: rgba(43, 138, 62, .12); --bad: #c92a2a; --bad-soft: rgba(201, 42, 42, .1); --warn: #d9480f; --warn-soft: rgba(217, 72, 15, .1);
+  --c1: #1c6dd0; --c2: #e8590c; --c3: #2b8a3e; --c4: #9c36b5; --c5: #c2255c;
+  --l1: #0b9aa6; --l2: #d99a00; --l3: #6a9e12;
+  --vlo: #3b5bdb; --vhi: #e03131;
+  --shadow: 0 1px 2px rgba(40, 30, 10, .06), 0 6px 22px rgba(40, 30, 10, .07);
+  --shadow-lg: 0 2px 6px rgba(40, 30, 10, .08), 0 18px 48px rgba(40, 30, 10, .16);
+  --serif: "STIX Two Text", Cambria, "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, Consolas, "SF Mono", Menlo, monospace;
+  --math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Noto Sans Math", math;
+  --top: 54px; --bot: 58px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #10141a; --paper-2: #161b23; --card: #181e27; --card-2: #1d2430;
+    --ink: #e9e5da; --ink-2: #c0bbae; --muted: #8d929c; --line: #2b333f; --line-2: #3a4351;
+    --grid: rgba(255, 255, 255, .03);
+    --wire: #dcd7c9; --accent: #2bc4b1; --accent-2: #5fd8c8; --accent-ink: #05201c; --accent-soft: rgba(43, 196, 177, .12);
+    --hot: #ffc53d; --good: #51cf66; --good-soft: rgba(81, 207, 102, .12); --bad: #ff6b6b; --bad-soft: rgba(255, 107, 107, .12); --warn: #ff922b; --warn-soft: rgba(255, 146, 43, .12);
+    --c1: #5c9dff; --c2: #ff8a4c; --c3: #5fcf7a; --c4: #d08bf0; --c5: #ff6b9d;
+    --l1: #22c3cf; --l2: #f5c040; --l3: #a3e046;
+    --vlo: #5c7cfa; --vhi: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+    --shadow-lg: 0 2px 6px rgba(0, 0, 0, .35), 0 18px 48px rgba(0, 0, 0, .45);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #10141a; --paper-2: #161b23; --card: #181e27; --card-2: #1d2430;
+  --ink: #e9e5da; --ink-2: #c0bbae; --muted: #8d929c; --line: #2b333f; --line-2: #3a4351;
+  --grid: rgba(255, 255, 255, .03);
+  --wire: #dcd7c9; --accent: #2bc4b1; --accent-2: #5fd8c8; --accent-ink: #05201c; --accent-soft: rgba(43, 196, 177, .12);
+  --hot: #ffc53d; --good: #51cf66; --good-soft: rgba(81, 207, 102, .12); --bad: #ff6b6b; --bad-soft: rgba(255, 107, 107, .12); --warn: #ff922b; --warn-soft: rgba(255, 146, 43, .12);
+  --c1: #5c9dff; --c2: #ff8a4c; --c3: #5fcf7a; --c4: #d08bf0; --c5: #ff6b9d;
+  --l1: #22c3cf; --l2: #f5c040; --l3: #a3e046;
+  --vlo: #5c7cfa; --vhi: #ff6b6b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, .35), 0 18px 48px rgba(0, 0, 0, .45);
+}
+
+/* ===================== base ===================== */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  color: var(--ink); font-family: var(--serif); font-size: 18px; line-height: 1.55;
+  overflow: hidden; -webkit-font-smoothing: antialiased;
+}
+* { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--accent); }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0; letter-spacing: -.01em; }
+p { margin: .55em 0; }
+.small { font-size: 14.5px; color: var(--muted); font-family: var(--sans); }
+.sans { font-family: var(--sans); }
+kbd { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--card); }
+
+/* MathML */
+math { font-family: var(--math); font-size: 1.08em; }
+math[display="block"] { font-size: 1.22em; margin: .35em 0; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.ci1 { color: var(--c1); } .ci2 { color: var(--c2); } .ci3 { color: var(--c3); } .ci4 { color: var(--c4); } .ci5 { color: var(--c5); }
+.tx-boxed { border: 1.5px solid currentColor; border-radius: 4px; padding: 1px 6px; }
+.tx-hl { background: var(--accent-soft); border-radius: 4px; padding: 0 3px; }
+.tx-good { color: var(--good); } .tx-bad { color: var(--bad); } .tx-dim { color: var(--muted); }
+.tx-err { color: var(--bad); }
+.tx-cancel { background: linear-gradient(to top right, transparent calc(50% - 1px), var(--bad) calc(50% - 1px), var(--bad) calc(50% + 1px), transparent calc(50% + 1px)); }
+mtable.mt-mat mtd { padding: .12em .45em; }
+mtable.mt-al mtd:nth-child(odd) { text-align: right; } mtable.mt-al mtd:nth-child(even) { text-align: left; }
+
+/* ===================== top bar ===================== */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; height: var(--top); z-index: 30;
+  display: flex; align-items: center; gap: 14px; padding: 0 14px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); font-family: var(--sans);
+}
+.brand { display: flex; align-items: center; gap: 9px; font-family: var(--serif); font-weight: 700; font-size: 19px; white-space: nowrap; cursor: pointer; border: 0; background: none; padding: 4px; }
+.brand svg { width: 26px; height: 26px; }
+.lvl-chip { font-size: 13px; padding: 3px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-weight: 600; white-space: nowrap; border: 0; cursor: pointer; }
+.progress { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; overflow: hidden; }
+.pdot { width: 30px; height: 6px; border-radius: 99px; background: var(--line); border: 0; padding: 0; cursor: pointer; transition: background .25s, transform .2s; flex: 0 1 30px; min-width: 8px; position: relative; }
+.pdot:hover { transform: scaleY(1.6); }
+.pdot.seen { background: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.pdot.on { background: var(--accent); }
+.pdot .tip { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); font-size: 12px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; }
+.pdot:hover .tip { opacity: 1; }
+.tools { display: flex; gap: 6px; }
+.icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: var(--card); cursor: pointer; color: var(--ink-2); }
+.icon-btn:hover { border-color: var(--line-2); color: var(--ink); }
+.icon-btn svg { width: 19px; height: 19px; }
+.icon-btn.txt { width: auto; padding: 0 10px; font-size: 13px; font-weight: 600; }
+
+/* ===================== minimap ===================== */
+.minimap {
+  position: fixed; top: calc(var(--top) + 10px); right: 14px; z-index: 25; width: 216px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg);
+  padding: 6px 8px 4px; cursor: zoom-in; width: 196px; transition: width .28s cubic-bezier(.2, .8, .2, 1), top .28s cubic-bezier(.2, .8, .2, 1), right .28s cubic-bezier(.2, .8, .2, 1), opacity .25s, transform .25s;
+}
+.minimap:hover { width: min(520px, 46vw); }
+.minimap .mm-head { display: flex; justify-content: space-between; align-items: center; font-family: var(--sans); font-size: 11.5px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.minimap .mm-head span:last-child { color: var(--accent); text-transform: none; letter-spacing: 0; }
+.minimap .circ .lab, .minimap .circ .alab { font-size: 26px; }
+body.on-exercise .minimap { opacity: 0; transform: translateY(-8px) scale(.96); pointer-events: none; }
+.minimap.min { width: 132px; padding: 5px 10px; top: 12px; right: 150px; z-index: 35; box-shadow: none; }
+.minimap.min #mmBody { display: none; }
+.minimap.min .mm-head span:first-child { display: none; }
+.minimap.min .mm-head span:last-child::before { content: 'Exercise '; }
+.minimap.min .mm-head { justify-content: center; }
+.minimap.min:hover { width: min(520px, 46vw); padding: 6px 8px 4px; box-shadow: var(--shadow-lg); }
+.minimap.min:hover #mmBody { display: block; }
+.minimap.min:hover .mm-head span:first-child { display: inline; }
+.minimap.min:hover .mm-head span:last-child::before { content: none; }
+.minimap.min:hover .mm-head { justify-content: space-between; }
+
+/* ===================== stage & pages ===================== */
+.stage { position: fixed; inset: var(--top) 0 var(--bot) 0; overflow: hidden; }
+.page { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+.page.enter-f { animation: inF .42s cubic-bezier(.2, .8, .2, 1) both; }
+.page.enter-b { animation: inB .42s cubic-bezier(.2, .8, .2, 1) both; }
+.page.leave-f { animation: outF .3s ease both; pointer-events: none; }
+.page.leave-b { animation: outB .3s ease both; pointer-events: none; }
+@keyframes inF { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: none; } }
+@keyframes inB { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
+@keyframes outF { to { opacity: 0; transform: translateX(-40px); } }
+@keyframes outB { to { opacity: 0; transform: translateX(40px); } }
+@media (prefers-reduced-motion: reduce) { .page.enter-f, .page.enter-b, .page.leave-f, .page.leave-b { animation-duration: .01s; } }
+.inner { max-width: 1340px; margin: 0 auto; padding: 18px 26px 40px; }
+.ph { padding-right: 236px; margin-bottom: 14px; min-height: 112px; }
+.kicker { font-family: var(--sans); font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.ph h1 { font-size: clamp(26px, 2.5vw, 36px); }
+.lede { font-size: 17.5px; color: var(--ink-2); max-width: 74ch; margin-top: 6px; }
+.fig .circ { max-height: max(300px, calc(100vh - var(--top) - var(--bot) - 190px)); }
+.split { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.fig { position: sticky; top: 0; }
+.txt > * + * { margin-top: 16px; }
+@media (max-width: 1020px) {
+  .split { grid-template-columns: 1fr; }
+  .fig { position: static; }
+  .ph { padding-right: 140px; }
+  .minimap { width: 130px; }
+}
+@media (max-width: 640px) { .inner { padding: 16px 14px 32px; } .ph { padding-right: 0; padding-top: 70px; } body { font-size: 17px; } }
+
+/* ===================== cards & controls ===================== */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+.card h3 { font-size: 20px; margin-bottom: 6px; }
+.card h3 .num { font-family: var(--sans); font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 7px; margin-right: 8px; vertical-align: 3px; }
+.card.fig-card { padding: 10px 12px; }
+.card.soft { background: var(--card-2); box-shadow: none; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 12px 12px 0; padding: 10px 14px; }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { font-family: var(--sans); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 2px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--sans); font-size: 15px; font-weight: 600; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--card); cursor: pointer; transition: transform .12s, background .2s, border-color .2s; white-space: nowrap; }
+.btn:hover { border-color: var(--ink-2); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn.ghost:hover { border-color: var(--line-2); }
+.btn.big { font-size: 17px; padding: 13px 22px; border-radius: 12px; }
+.btn svg { width: 17px; height: 17px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: var(--card); padding: 7px 13px; font-family: var(--sans); font-size: 14px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-2); }
+.seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.hoverlist { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.hoverlist li { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card-2); cursor: default; transition: border-color .2s, background .2s; }
+.hoverlist li:hover, .hoverlist li.on { border-color: var(--accent); background: var(--accent-soft); }
+
+/* ===================== bottom nav ===================== */
+.botnav { position: fixed; inset: auto 0 0 0; height: var(--bot); z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(8px); font-family: var(--sans); }
+.botnav .where { font-size: 14px; color: var(--muted); text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.botnav .where b { color: var(--ink); font-weight: 600; }
+.botnav .btn { min-width: 120px; }
+@media (max-width: 640px) { .botnav .where .hint { display: none; } .botnav .btn { min-width: 0; } }
+
+/* ===================== circuit ===================== */
+.circ { width: 100%; height: auto; display: block; overflow: visible; font-family: var(--serif); user-select: none; }
+.circ .wire { fill: none; stroke: var(--wire); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; transition: stroke .5s, stroke-width .3s; }
+.circ.pot .wire { stroke-width: 7; }
+.circ .rbox { fill: var(--card); stroke: var(--wire); stroke-width: 3.2; stroke-linejoin: round; }
+.circ .zig { fill: none; stroke: var(--wire); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+.circ .plate { stroke: var(--wire); stroke-linecap: butt; }
+.circ .plate.plus { stroke-width: 3.4; } .circ .plate.minus { stroke-width: 8; }
+.circ .pm { font: 700 18px var(--sans); fill: var(--muted); }
+.circ .hit { fill: transparent; }
+.circ .lab { font-size: 22px; fill: var(--ink); }
+.circ .lab .sym, .circ .alab .sym { font-style: italic; }
+.circ .sym.emf { font-family: var(--math); font-style: normal; }
+.circ .lab .val { fill: var(--ink-2); }
+.circ .ndot { fill: var(--wire); }
+.circ .nlab { font: 700 26px var(--serif); fill: var(--ink); }
+.circ .vlab { font: 700 19px var(--sans); fill: var(--accent); paint-order: stroke; stroke: var(--card); stroke-width: 5px; }
+.circ .arrow { color: var(--c1); }
+.circ .ahead { fill: currentColor; }
+.circ .alab { font-size: 23px; font-weight: 700; fill: currentColor; paint-order: stroke; stroke: var(--card); stroke-width: 5px; stroke-linejoin: round; }
+.circ .arrow.clickable { cursor: pointer; }
+.circ .ahalo { fill: currentColor; opacity: .1; transition: opacity .2s; animation: halo 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.circ .arrow.clickable:hover .ahalo { opacity: .25; animation: none; }
+@keyframes halo { 0%, 100% { opacity: .07; transform: scale(.85); } 50% { opacity: .2; transform: scale(1.05); } }
+.circ .flow { fill: none; stroke-linecap: round; stroke-width: 7.5; stroke-dasharray: 0 26; opacity: .95; }
+.circ .flow.nflow { stroke: var(--muted); }
+.circ .flow.e { stroke: var(--vlo); stroke-width: 6; }
+.circ .band { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 34; opacity: 0; transition: opacity .4s; }
+.circ .band.show { opacity: .2; }
+.circ [data-b], .circ [data-n] { transition: opacity .3s; }
+.circ.focusing [data-b]:not(.on), .circ.focusing [data-n]:not(.on) { opacity: .14; }
+.circ .hot { filter: drop-shadow(0 0 4px var(--hot)) drop-shadow(0 0 8px var(--hot)); }
+.circ .loopind .larc { fill: none; stroke: currentColor; stroke-width: 3.6; stroke-linecap: round; }
+.circ .loopind .lhead { fill: currentColor; }
+.circ .loopind .lnum { font: 700 22px var(--sans); fill: currentColor; }
+.circ .loopind .lhalo { fill: currentColor; opacity: .08; transition: opacity .2s; }
+.circ .loopind.clickable { cursor: pointer; }
+.circ .loopind.clickable:hover .lhalo { opacity: .2; }
+.circ .nhit { fill: transparent; cursor: pointer; }
+.circ .nhit:hover { fill: var(--accent-soft); }
+.circ .walker .wdot { fill: currentColor; stroke: var(--card); stroke-width: 3; }
+.circ .walker .wring { fill: currentColor; opacity: .25; animation: ring 1.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ring { from { transform: scale(.6); opacity: .45; } to { transform: scale(1.6); opacity: 0; } }
+.circ .startflag { fill: none; stroke: var(--ink-2); stroke-width: 2.5; stroke-dasharray: 4 4; }
+
+/* ===================== rollercoaster chart ===================== */
+.coaster { width: 100%; height: auto; display: block; font-family: var(--sans); }
+.coaster .cg { stroke: var(--line); stroke-width: 1; }
+.coaster .cz { stroke: var(--ink-2); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.coaster .cax { font-size: 12px; fill: var(--muted); }
+.coaster .cband { fill: var(--accent-soft); }
+.coaster .cmark { font-size: 13px; font-weight: 700; fill: var(--ink-2); font-family: var(--serif); font-style: italic; }
+.coaster .cdv { font-size: 12.5px; font-weight: 700; }
+.coaster .cdv.up { fill: var(--good); } .coaster .cdv.down { fill: var(--bad); }
+.coaster .cline-bg { fill: none; stroke: var(--line-2); stroke-width: 2.5; stroke-dasharray: 3 5; }
+.coaster .cline { fill: none; stroke: var(--accent); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+.coaster .cdot { fill: var(--accent); stroke: var(--card); stroke-width: 2.5; }
+.coaster .cval { font-size: 14px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+
+/* ===================== exercise page ===================== */
+.ex-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
+.ex-head h1 { font-size: clamp(28px, 3vw, 40px); }
+.ex-head .lede { margin-top: 4px; font-size: 18px; }
+.ex-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.hero { padding: 8px 10px; position: relative; }
+.hero .circ { max-height: max(280px, calc(100vh - var(--top) - var(--bot) - 200px)); }
+.hero-tools { position: absolute; left: 14px; bottom: 10px; display: flex; gap: 8px; }
+.ex-side { display: grid; gap: 14px; }
+.levels { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lvl { text-align: left; border: 1px solid var(--line); background: var(--card-2); border-radius: 11px; padding: 8px 10px; cursor: pointer; font-family: var(--sans); transition: border-color .2s, background .2s; }
+.lvl:hover { border-color: var(--line-2); }
+.lvl.on { border-color: var(--accent); background: var(--accent-soft); }
+.lvl b { display: block; font-size: 14.5px; }
+.lvl span { font-size: 12px; color: var(--muted); }
+.given { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 18px; }
+.ans { display: grid; gap: 8px; margin-top: 6px; }
+.ans-row { display: grid; grid-template-columns: 54px 1fr 22px 26px; align-items: center; gap: 8px; }
+.ans-row input { width: 100%; font-family: var(--math); font-size: 20px; padding: 5px 10px; border-radius: 9px; border: 1.5px solid var(--line-2); background: var(--card); text-align: right; }
+.ans-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ans-row.ok input { border-color: var(--good); background: var(--good-soft); }
+.ans-row.sign input { border-color: var(--warn); background: var(--warn-soft); }
+.ans-row.no input { border-color: var(--bad); background: var(--bad-soft); }
+.ans-row .mark { font-family: var(--sans); font-weight: 800; font-size: 18px; text-align: center; }
+.ans-row.ok .mark { color: var(--good); } .ans-row.sign .mark { color: var(--warn); } .ans-row.no .mark { color: var(--bad); }
+.fb { font-family: var(--sans); font-size: 14.5px; min-height: 1.4em; margin-top: 6px; }
+.code-box { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.code { font-family: var(--mono); font-weight: 700; font-size: 16px; padding: 3px 10px; background: var(--card-2); border: 1px dashed var(--line-2); border-radius: 8px; letter-spacing: .04em; }
+.code-box input { width: 120px; font-family: var(--mono); font-size: 15px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--card); text-transform: uppercase; }
+.return-pill { position: fixed; top: calc(var(--top) + 12px); right: 14px; z-index: 26; box-shadow: var(--shadow-lg); }
+@media (max-width: 1100px) { .ex-grid { grid-template-columns: 1fr; } }
+
+/* ===================== step content ===================== */
+.mlines { display: grid; grid-template-columns: minmax(70px, max-content) minmax(0, 1fr) minmax(36px, max-content); column-gap: 14px; row-gap: 2px; align-items: center; }
+.mlines .note { font-family: var(--sans); font-size: 12.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+.mlines .eq { min-width: 0; }
+.mlines .eq math { margin: .15em 0; }
+.mlines .tag { font-family: var(--math); color: var(--muted); font-size: 18px; text-align: right; white-space: nowrap; }
+.mlines .ln { display: contents; }
+.mlines .ln.fresh > * { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.walk-table { width: 100%; border-collapse: collapse; font-size: 16.5px; }
+.walk-table th { font-family: var(--sans); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); text-align: left; font-weight: 700; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.walk-table td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.walk-table tr { transition: background .3s; }
+.walk-table tr.cur { background: var(--accent-soft); }
+.walk-table tr.new { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
+.walk-table td.term { white-space: nowrap; text-align: right; font-size: 18px; }
+.walk-table td.n { font-family: var(--sans); color: var(--muted); font-size: 13px; width: 24px; }
+.walk-table .why { color: var(--ink-2); }
+.badge { display: inline-block; font-family: var(--sans); font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; border-radius: 6px; padding: 1px 7px; vertical-align: 2px; }
+.badge.up { background: var(--good-soft); color: var(--good); } .badge.down { background: var(--bad-soft); color: var(--bad); }
+.signs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sign-tile { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card-2); }
+.sign-tile svg { width: 96px; height: 54px; }
+.sign-tile .r { font-size: 15.5px; line-height: 1.35; }
+.sign-tile .r math { font-size: 1.15em; }
+@media (max-width: 700px) { .signs { grid-template-columns: 1fr; } }
+details.cheat { border: 1px solid var(--line); border-radius: 12px; background: var(--card-2); padding: 8px 12px; }
+details.cheat summary { cursor: pointer; font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--ink-2); }
+details.cheat[open] summary { margin-bottom: 8px; }
+.step-card { opacity: 1; }
+.step-card.hidden { display: none; }
+.step-card.fresh { animation: rise .5s cubic-bezier(.2, .8, .2, 1) both; }
+.blk + .blk { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.blk-head { font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 2px; }
+[hidden] { display: none !important; }
+.rv-box { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+.rv-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-family: var(--sans); font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.linkbtn { border: 0; background: none; padding: 2px 4px; font: 600 13px var(--sans); color: var(--accent); cursor: pointer; border-radius: 6px; }
+.linkbtn:hover { text-decoration: underline; }
+.rv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+.rv { display: grid; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; perspective: 700px; border-radius: 12px; }
+.rv > span { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 58px; padding: 6px 8px; border-radius: 12px; border: 1px solid var(--line-2); font-size: 18px; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .55s cubic-bezier(.2, .8, .2, 1), border-color .2s, background .2s; }
+.rv-q { border-style: dashed !important; background: repeating-linear-gradient(135deg, var(--card-2) 0 7px, var(--card) 7px 14px); }
+.rv-q small { font: 600 10.5px var(--sans); color: var(--muted); letter-spacing: .03em; }
+.rv:hover .rv-q { border-color: var(--accent); }
+.rv-a { background: var(--card-2); transform: rotateY(180deg); }
+.rv.open .rv-q { transform: rotateY(-180deg); }
+.rv.open .rv-a { transform: rotateY(0deg); }
+.rv:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .rv > span { transition: none; } }
+.peek { display: flex; flex-wrap: wrap; gap: 8px; }
+.peek .chip { font-size: 18px; padding: 4px 12px; border-radius: 10px; background: var(--card-2); border: 1px solid var(--line); filter: blur(6px); transition: filter .25s; cursor: help; }
+.peek:hover .chip, .peek:focus-within .chip, .peek.open .chip { filter: none; }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.res { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--card-2); border-left-width: 5px; }
+.res .big { font-size: 26px; }
+.res .what { font-family: var(--sans); font-size: 13.5px; color: var(--ink-2); }
+.legend { display: flex; align-items: center; gap: 10px; font-family: var(--sans); font-size: 13px; color: var(--muted); }
+.legend .bar { flex: 1; height: 12px; border-radius: 99px; background: linear-gradient(90deg, var(--vlo), color-mix(in oklch, var(--vlo) 50%, var(--vhi)), var(--vhi)); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { border: 1px solid var(--line-2); background: var(--card); border-radius: 99px; padding: 5px 14px; font-family: var(--sans); font-size: 14px; cursor: pointer; }
+.tabs button.on { color: var(--accent-ink); font-weight: 600; }
+.ptable { width: 100%; border-collapse: collapse; font-size: 16.5px; }
+.ptable td, .ptable th { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+.ptable th { font-family: var(--sans); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.ptable td.w { text-align: right; font-family: var(--math); font-size: 18px; white-space: nowrap; }
+.ptable tr.tot td { font-weight: 700; border-top: 2px solid var(--line-2); }
+.pbars { display: grid; gap: 8px; margin-top: 10px; }
+.pbar { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; font-family: var(--sans); font-size: 13px; }
+.pbar .track { display: flex; height: 26px; border-radius: 8px; overflow: hidden; background: var(--card-2); border: 1px solid var(--line); }
+.pbar .track span { display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 12px; overflow: hidden; white-space: nowrap; transition: flex-grow .6s; }
+.recipe { counter-reset: r; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.recipe li { counter-increment: r; display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; }
+.recipe li::before { content: counter(r); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 700 16px var(--sans); }
+.jd { max-width: 460px; margin: 4px auto 6px; }
+.jd .jt { font: 600 17px var(--sans); }
+.junction-demo svg, .loop-demo svg { width: 100%; height: auto; display: block; }
+.slider-row { display: grid; grid-template-columns: 70px 1fr 56px; gap: 10px; align-items: center; font-family: var(--sans); font-size: 14px; }
+.slider-row input[type=range] { width: 100%; accent-color: var(--accent); }
+.toast { position: fixed; left: 50%; bottom: calc(var(--bot) + 16px); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); font-family: var(--sans); font-size: 14px; padding: 9px 16px; border-radius: 10px; opacity: 0; transition: opacity .25s, transform .25s; z-index: 50; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+.focusable-card { transition: border-color .2s, box-shadow .2s; }
+.focusable-card:hover { border-color: var(--accent); }
+.dimcard { opacity: .72; }
+.kbd-hint { font-family: var(--sans); font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="brand" id="brand" title="Back to the exercise">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--accent)"/><path d="M6 16h7m6 0h7M16 6v7m0 6v7" stroke="var(--accent-ink)" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="16" r="3.4" fill="var(--accent-ink)"/></svg>
+    <span>Kirchhoff Lab</span>
+  </button>
+  <button class="lvl-chip" id="lvlChip" title="Change level on the exercise page"></button>
+  <nav class="progress" id="progress" aria-label="Steps"></nav>
+  <div class="tools">
+    <button class="icon-btn txt" id="symBtn" title="Resistor symbol: IEC box (Europe) or zig-zag (US)">IEC</button>
+    <button class="icon-btn" id="themeBtn" title="Light / dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="icon-btn" id="fsBtn" title="Full screen (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+</header>
+
+<div class="minimap" id="minimap" title="Click to see the exercise full-screen" role="button" tabindex="0">
+  <div class="mm-head"><span>The exercise</span><span>open ↗</span></div>
+  <div id="mmBody"></div>
+</div>
+
+<main class="stage" id="stage"></main>
+
+<footer class="botnav">
+  <button class="btn" id="prevBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+  <div class="where" id="where"></div>
+  <button class="btn primary" id="nextBtn">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+/* =====================================================================
+   CORE — pure logic, no DOM. (LaTeX→MathML, circuit generator, solver)
+   ===================================================================== */
+
+/* ---------- small math helpers ---------- */
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+const gcdAll = arr => arr.reduce((g, v) => gcd(g, v), 0);
+const dist = (p, q) => Math.hypot(q[0] - p[0], q[1] - p[1]);
+const isInt = x => Math.abs(x - Math.round(x)) < 1e-9;
+
+function RNG(seed) {
+  let a = (seed >>> 0) || 1;
+  const next = () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return {
+    next,
+    int: (lo, hi) => lo + Math.floor(next() * (hi - lo + 1)),
+    pick: arr => arr[Math.floor(next() * arr.length)],
+    chance: p => next() < p,
+    shuffle: arr => { const a2 = arr.slice(); for (let i = a2.length - 1; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [a2[i], a2[j]] = [a2[j], a2[i]]; } return a2; },
+  };
+}
+
+/* =====================================================================
+   TeX → MathML (a small, dependency-free subset of LaTeX)
+   ===================================================================== */
+const TeX = (() => {
+  const GREEK = { alpha: 'α', beta: 'β', gamma: 'γ', delta: 'δ', epsilon: 'ϵ', varepsilon: 'ε', theta: 'θ', lambda: 'λ', mu: 'μ', pi: 'π', rho: 'ρ', sigma: 'σ', tau: 'τ', phi: 'ϕ', varphi: 'φ', omega: 'ω', Gamma: 'Γ', Delta: 'Δ', Theta: 'Θ', Lambda: 'Λ', Pi: 'Π', Sigma: 'Σ', Phi: 'Φ', Omega: 'Ω' };
+  const UPPER = new Set(['Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Υ', 'Φ', 'Ψ', 'Ω']);
+  const OPS = { cdot: '⋅', times: '×', pm: '±', mp: '∓', to: '→', rightarrow: '→', leftarrow: '←', Rightarrow: '⇒', Leftarrow: '⇐', Leftrightarrow: '⇔', implies: '⟹', approx: '≈', neq: '≠', ne: '≠', le: '≤', leq: '≤', ge: '≥', geq: '≥', equiv: '≡', cdots: '⋯', ldots: '…', dots: '…', uparrow: '↑', downarrow: '↓', circlearrowright: '↻', circlearrowleft: '↺', checkmark: '✓', propto: '∝', mid: '∣', colon: ':', langle: '⟨', rangle: '⟩', div: '÷', ast: '∗' };
+  const LARGE = { sum: '∑', prod: '∏' };
+  const SPACES = { ',': '0.1667em', ':': '0.2222em', ';': '0.2778em', ' ': '0.25em', quad: '1em', qquad: '2em', enspace: '0.5em', '!': '0em' };
+  const RAW = new Set(['text', 'textbf', 'mathrm', 'unit', 'cl', 'I', 'R', 'E', 'V', 'J', 'begin', 'end']);
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function tokenize(src) {
+    const t = []; let i = 0; const n = src.length;
+    while (i < n) {
+      const c = src[i];
+      if (c === '\\') {
+        let j = i + 1, name;
+        if (j < n && /[A-Za-z]/.test(src[j])) { while (j < n && /[A-Za-z]/.test(src[j])) j++; name = src.slice(i + 1, j); }
+        else { name = src[j] || ''; j++; }
+        i = j;
+        t.push({ t: 'cmd', v: name });
+        if (RAW.has(name)) {
+          while (i < n && src[i] === ' ') i++;
+          if (src[i] === '{') {
+            let depth = 1, k = i + 1;
+            while (k < n) { if (src[k] === '{') depth++; else if (src[k] === '}') { depth--; if (!depth) break; } k++; }
+            t.push({ t: 'raw', v: src.slice(i + 1, k) }); i = k + 1;
+          } else { t.push({ t: 'raw', v: src[i] || '' }); i++; }
+        }
+        continue;
+      }
+      if (/\s/.test(c)) { i++; continue; }
+      if (/[0-9]/.test(c) || (c === '.' && /[0-9]/.test(src[i + 1] || ''))) {
+        let j = i; while (j < n && /[0-9]/.test(src[j])) j++;
+        if (src[j] === '.' && /[0-9]/.test(src[j + 1] || '')) { j++; while (j < n && /[0-9]/.test(src[j])) j++; }
+        t.push({ t: 'num', v: src.slice(i, j) }); i = j; continue;
+      }
+      if ('{}^_&'.includes(c)) { t.push({ t: c }); i++; continue; }
+      if (/\p{L}/u.test(c)) { t.push({ t: 'id', v: c }); i++; continue; }
+      t.push({ t: 'op', v: c }); i++;
+    }
+    return t;
+  }
+
+  function convert(src, display) {
+    const toks = tokenize(String(src)); let p = 0;
+    const peek = () => toks[p];
+    const mrow = arr => arr.length === 0 ? '<mrow></mrow>' : arr.length === 1 ? arr[0].x : `<mrow>${arr.map(a => a.x).join('')}</mrow>`;
+    const W = x => ({ x, k: 'ord' });
+    const rawArg = () => { const t = peek(); if (t && t.t === 'raw') { p++; return t.v; } return ''; };
+    const sub = r => /^\d+$/.test(r) ? `<mn>${r}</mn>` : `<mtext>${esc(r)}</mtext>`;
+
+    function seq(stop) {
+      const out = [];
+      while (p < toks.length) {
+        const t = peek();
+        if (t.t === '}') { if (stop === '}') break; p++; continue; }
+        if (stop === 'right' && t.t === 'cmd' && t.v === 'right') break;
+        if (stop === 'cell' && (t.t === '&' || (t.t === 'cmd' && (t.v === '\\' || t.v === 'end')))) break;
+        out.push(scripted(out));
+      }
+      return out;
+    }
+    function group() { p++; const s = seq('}'); if (peek() && peek().t === '}') p++; return s; }
+    function arg() { const t = peek(); if (!t) return '<mrow></mrow>'; if (t.t === '{') return mrow(group()); return atom([]).x; }
+
+    function scripted(prev) {
+      const base = atom(prev);
+      let sb = null, sp = null;
+      while (peek() && (peek().t === '_' || peek().t === '^')) { const t = toks[p++]; const a = arg(); if (t.t === '_') sb = a; else sp = a; }
+      if (!sb && !sp) return base;
+      const big = base.k === 'large', k = big ? 'large' : 'ord';
+      if (sb && sp) return { x: big ? `<munderover>${base.x}${sb}${sp}</munderover>` : `<msubsup>${base.x}${sb}${sp}</msubsup>`, k };
+      if (sb) return { x: big ? `<munder>${base.x}${sb}</munder>` : `<msub>${base.x}${sb}</msub>`, k };
+      return { x: big ? `<mover>${base.x}${sp}</mover>` : `<msup>${base.x}${sp}</msup>`, k };
+    }
+
+    function atom(prev) {
+      const t = toks[p++];
+      if (!t) return W('');
+      const last = prev.length ? prev[prev.length - 1].k : 'start';
+      switch (t.t) {
+        case '{': p--; return W(mrow(group()));
+        case 'num': return W(`<mn>${t.v}</mn>`);
+        case 'id': return W(UPPER.has(t.v) ? `<mi mathvariant="normal">${t.v}</mi>` : `<mi>${esc(t.v)}</mi>`);
+        case 'op': return opTok(t.v, last);
+        case 'cmd': return cmd(t.v, last);
+        case 'raw': return W(`<mtext>${esc(t.v)}</mtext>`);
+        default: return W('');
+      }
+    }
+
+    function opTok(v, last) {
+      if (v === '−') v = '-';
+      const unary = last === 'start' || last === 'op' || last === 'open' || last === 'large';
+      if ((v === '-' || v === '+') && unary) return { x: `<mo form="prefix" lspace="0" rspace="0">${v === '-' ? '−' : '+'}</mo>`, k: 'op' };
+      if (v === '-') return { x: '<mo>−</mo>', k: 'op' };
+      if (v === '(' || v === '[') return { x: `<mo>${v}</mo>`, k: 'open' };
+      if (v === ')' || v === ']') return { x: `<mo>${v}</mo>`, k: 'close' };
+      if (v === '|') return { x: '<mo stretchy="false" lspace="0.05em" rspace="0.05em">|</mo>', k: unary ? 'open' : 'close' };
+      if (v === "'") return { x: '<mo lspace="0" rspace="0">′</mo>', k: 'ord' };
+      if (v === '*') return { x: '<mo>∗</mo>', k: 'op' };
+      return { x: `<mo>${esc(v)}</mo>`, k: 'op' };
+    }
+
+    function delim() {
+      const t = toks[p++]; if (!t) return '';
+      if (t.t === 'op') return t.v === '.' ? '' : esc(t.v);
+      if (t.t === 'cmd') { if (t.v === '{' || t.v === '}') return t.v; if (OPS[t.v]) return OPS[t.v]; if (t.v === 'lvert' || t.v === 'rvert' || t.v === 'vert') return '|'; }
+      return '';
+    }
+
+    function env(name) {
+      const rows = [[]];
+      while (p < toks.length) {
+        const cell = seq('cell');
+        rows[rows.length - 1].push(mrow(cell));
+        const t = peek(); if (!t) break;
+        if (t.t === '&') { p++; continue; }
+        if (t.t === 'cmd' && t.v === '\\') { p++; rows.push([]); continue; }
+        if (t.t === 'cmd' && t.v === 'end') { p++; rawArg(); break; }
+      }
+      const lastRow = rows[rows.length - 1];
+      if (rows.length > 1 && lastRow.length === 1 && lastRow[0] === '<mrow></mrow>') rows.pop();
+      const cls = name === 'aligned' ? 'mt-al' : name === 'cases' ? 'mt-cases' : 'mt-mat';
+      const table = `<mtable class="${cls}">${rows.map(r => `<mtr>${r.map(c => `<mtd>${c}</mtd>`).join('')}</mtr>`).join('')}</mtable>`;
+      const L = { bmatrix: '[', pmatrix: '(', vmatrix: '|', cases: '{' }[name], R = { bmatrix: ']', pmatrix: ')', vmatrix: '|' }[name];
+      return W(`<mrow>${L ? `<mo fence="true" form="prefix">${L}</mo>` : ''}${table}${R ? `<mo fence="true" form="postfix">${R}</mo>` : ''}</mrow>`);
+    }
+
+    function cmd(name, last) {
+      if (GREEK[name]) { const g = GREEK[name]; return W(UPPER.has(g) ? `<mi mathvariant="normal">${g}</mi>` : `<mi>${g}</mi>`); }
+      if (OPS[name]) return { x: `<mo>${OPS[name]}</mo>`, k: 'op' };
+      if (LARGE[name]) return { x: `<mo largeop="true" movablelimits="true">${LARGE[name]}</mo>`, k: 'large' };
+      if (name in SPACES) return { x: `<mspace width="${SPACES[name]}"/>`, k: last === 'start' ? 'op' : last };
+      switch (name) {
+        case 'frac': case 'dfrac': case 'tfrac': { const a = arg(), b = arg(); return W(`<mfrac${name === 'dfrac' ? ' displaystyle="true"' : ''}>${a}${b}</mfrac>`); }
+        case 'sqrt': return W(`<msqrt>${arg()}</msqrt>`);
+        case 'text': return W(`<mtext>${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
+        case 'textbf': return W(`<mtext class="tx-bf">${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
+        case 'mathrm': { const r = rawArg(); return W(r.length === 1 ? `<mi mathvariant="normal">${esc(r)}</mi>` : `<mi>${esc(r)}</mi>`); }
+        case 'unit': return W(`<mrow><mspace width="0.17em"/><mi mathvariant="normal" class="unit">${esc(rawArg())}</mi></mrow>`);
+        case 'cl': { const cls = rawArg(); return W(`<mrow class="${esc(cls)}">${arg()}</mrow>`); }
+        case 'boxed': case 'hl': case 'cancel': case 'dim': case 'good': case 'bad': return W(`<mrow class="tx-${name}">${arg()}</mrow>`);
+        case 'I': case 'J': { const r = rawArg(); return W(`<msub class="ci ci${esc(r)}"><mi>${name}</mi>${sub(r)}</msub>`); }
+        case 'R': { const r = rawArg(); return W(`<msub><mi>R</mi>${sub(r)}</msub>`); }
+        case 'E': { const r = rawArg(); return W(`<msub><mi>ℰ</mi>${sub(r)}</msub>`); }
+        case 'V': { const r = rawArg(); return W(`<msub><mi>V</mi><mtext>${esc(r)}</mtext></msub>`); }
+        case 'emf': return W('<mi>ℰ</mi>');
+        case 'left': { const d = delim(); const inner = seq('right'); p++; const d2 = delim(); return W(`<mrow>${d ? `<mo fence="true" form="prefix">${d}</mo>` : ''}${inner.map(a => a.x).join('')}${d2 ? `<mo fence="true" form="postfix">${d2}</mo>` : ''}</mrow>`); }
+        case 'right': delim(); return W('');
+        case 'overset': { const a = arg(), b = arg(); return { x: `<mover>${b}${a}</mover>`, k: 'op' }; }
+        case 'underset': { const a = arg(), b = arg(); return { x: `<munder>${b}${a}</munder>`, k: 'op' }; }
+        case 'begin': return env(rawArg());
+        case 'end': rawArg(); return W('');
+        case '{': return { x: '<mo>{</mo>', k: 'open' };
+        case '}': return { x: '<mo>}</mo>', k: 'close' };
+        case '\\': return W('');
+        case '%': case '#': case '$': case '&': case '_': return W(`<mtext>${esc(name)}</mtext>`);
+        case 'degree': return W('<mi mathvariant="normal">°</mi>');
+        default: return W(`<mtext class="tx-err">\\${esc(name)}</mtext>`);
+      }
+    }
+
+    const body = seq(null);
+    return `<math${display ? ' display="block"' : ''}>${mrow(body)}</math>`;
+  }
+  return { convert, esc };
+})();
+const M = tex => TeX.convert(tex, false);
+const MD = tex => TeX.convert(tex, true);
+
+/* ---------- LaTeX snippets for numbers and linear combinations ---------- */
+function fmtN(n) {
+  if (!isInt(n)) { const s = (Math.round(n * 1000) / 1000).toString(); return s.startsWith('-') ? '-' + s.slice(1) : s; }
+  return String(Math.round(n));
+}
+const par = x => x < 0 ? `(${fmtN(x)})` : fmtN(x);
+const Itex = b => `\\I{${b + 1}}`;
+function coefTerm(a, body, first) {
+  const m = Math.abs(a), s = (m === 1 ? '' : fmtN(m)) + body;
+  return first ? (a < 0 ? '-' : '') + s : (a < 0 ? ' - ' : ' + ') + s;
+}
+/* pairs: [{a, b}] where b = branch index or null (constant) */
+function texPairs(pairs) {
+  let s = '', first = true;
+  for (const { a, b, body } of pairs) {
+    if (!a) continue;
+    if (b === null || b === undefined) { if (body) { s += coefTerm(a, body, first); } else { s += first ? fmtN(a) : (a < 0 ? ' - ' : ' + ') + fmtN(Math.abs(a)); } }
+    else s += coefTerm(a, Itex(b), first);
+    first = false;
+  }
+  return first ? '0' : s;
+}
+const texLHS = c => texPairs(c.map((a, b) => ({ a, b })));
+const texEq = e => `${texLHS(e.c)} = ${fmtN(e.r)}`;
+function texExpr(ex, ex0) { const pairs = ex.map((a, b) => ({ a, b })); if (ex0) pairs.push({ a: ex0, b: null }); return texPairs(pairs); }
+
+/* normalise an equation: first nonzero coefficient positive, divide by gcd */
+function normalize(e) {
+  const nz = e.c.find(v => v !== 0) || 0;
+  const g = gcdAll([...e.c, e.r]) || 1;
+  const d = (nz < 0 ? -1 : 1) * g;
+  if (d === 1) return { e, d: 1 };
+  return { e: { ...e, c: e.c.map(v => v / d), r: e.r / d }, d };
+}
+const divNote = d => d === -1 ? '× (−1)' : d < 0 ? `÷ (−${-d})` : `÷ ${d}`;
+
+/* =====================================================================
+   LEVELS & TOPOLOGIES
+   ===================================================================== */
+const LEVELS = {
+  1: { name: 'Warm-up', tag: 'One loop', blurb: 'A single loop: one current, only the loop rule.' },
+  2: { name: 'Classic', tag: 'Two loops', blurb: 'Two loops sharing a branch: three currents.' },
+  3: { name: 'Tricky', tag: 'Two loops, crowded', blurb: 'Crowded branches, a battery in the middle, arrows pointing any which way.' },
+  4: { name: 'Expert', tag: 'Three loops', blurb: 'Three windows, three junctions, five currents.' },
+};
+
+function topology(level) {
+  if (level === 1) {
+    const x0 = 270, x1 = 730, y0 = 130, y1 = 470;
+    return {
+      view: { w: 1000, h: 600 },
+      nodes: [{ id: 'P', pts: [[x0, y0]], wires: [], labels: [] }],
+      branches: [{ from: 'P', fp: 0, to: 'P', tp: 0, path: [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]], sides: ['U', 'R', 'D', 'L'] }],
+      loops: [{ items: [{ b: 0, t: 1 }], c: [500, 300] }],
+      ground: 'P',
+    };
+  }
+  if (level === 2 || level === 3) {
+    const xs = [170, 500, 830], y0 = 110, y1 = 490;
+    return {
+      view: { w: 1000, h: 600 },
+      nodes: [
+        { id: 'A', pts: xs.map(x => [x, y0]), wires: [[0, 1], [1, 2]], labels: [{ pt: 1, dir: 'U' }] },
+        { id: 'B', pts: xs.map(x => [x, y1]), wires: [[0, 1], [1, 2]], labels: [{ pt: 1, dir: 'D' }] },
+      ],
+      branches: xs.map((x, i) => ({ from: 'A', fp: i, to: 'B', tp: i, path: [[x, y0], [x, y1]], sides: [i === 0 ? 'L' : 'R'] })),
+      loops: [{ items: [{ b: 0, t: -1 }, { b: 1, t: 1 }], c: [335, 300] }, { items: [{ b: 1, t: -1 }, { b: 2, t: 1 }], c: [705, 300] }],
+      ground: 'B',
+    };
+  }
+  const xs = [130, 380, 700, 950], y0 = 110, y1 = 490;
+  return {
+    view: { w: 1080, h: 600 },
+    nodes: [
+      { id: 'A', pts: [[xs[0], y0], [xs[1], y0]], wires: [[0, 1]], labels: [{ pt: 1, dir: 'U' }] },
+      { id: 'B', pts: [[xs[2], y0], [xs[3], y0]], wires: [[0, 1]], labels: [{ pt: 0, dir: 'U' }] },
+      { id: 'C', pts: xs.map(x => [x, y1]), wires: [[0, 1], [1, 2], [2, 3]], labels: [{ pt: 1, dir: 'D' }, { pt: 2, dir: 'D' }] },
+    ],
+    branches: [
+      { from: 'A', fp: 0, to: 'C', tp: 0, path: [[xs[0], y0], [xs[0], y1]], sides: ['L'] },
+      { from: 'A', fp: 1, to: 'C', tp: 1, path: [[xs[1], y0], [xs[1], y1]], sides: ['L'] },
+      { from: 'A', fp: 1, to: 'B', tp: 0, path: [[xs[1], y0], [xs[2], y0]], sides: ['U'] },
+      { from: 'B', fp: 0, to: 'C', tp: 2, path: [[xs[2], y0], [xs[2], y1]], sides: ['R'] },
+      { from: 'B', fp: 1, to: 'C', tp: 3, path: [[xs[3], y0], [xs[3], y1]], sides: ['R'] },
+    ],
+    loops: [
+      { items: [{ b: 0, t: -1 }, { b: 1, t: 1 }], c: [255, 300] },
+      { items: [{ b: 1, t: -1 }, { b: 2, t: 1 }, { b: 3, t: 1 }], c: [540, 330] },
+      { items: [{ b: 3, t: -1 }, { b: 4, t: 1 }], c: [825, 300] },
+    ],
+    ground: 'C',
+  };
+}
+
+function elementPlan(level, rng) {
+  if (level === 1) {
+    const nR = rng.pick([2, 2, 3]), twoE = rng.chance(0.55);
+    const els = [{ type: 'R', seg: 0 }];
+    if (nR === 3) els.push({ type: 'R', seg: twoE ? 0 : 2 });
+    els.push({ type: 'R', seg: 1 });
+    if (twoE) els.push({ type: 'E', fixed: true, seg: 2 });
+    els.push({ type: 'E', adj: 0, seg: 3 });
+    return [els.sort((a, b) => a.seg - b.seg)];
+  }
+  const R = () => ({ type: 'R' });
+  if (level === 2) return [rng.shuffle([{ type: 'E', adj: 0 }, R()]), [R()], rng.shuffle([{ type: 'E', adj: 1 }, R()])];
+  if (level === 3) {
+    for (;;) {
+      const outer = adj => rng.shuffle([{ type: 'E', adj }, R(), ...(rng.chance(0.5) ? [R()] : [])]);
+      const mid = rng.shuffle([R(), ...(rng.chance(0.45) ? [R()] : []), ...(rng.chance(0.75) ? [{ type: 'E', fixed: true }] : [])]);
+      const plan = [outer(0), mid, outer(1)];
+      if (plan.flat().length >= 7) return plan;
+    }
+  }
+  const maybeE = p => (rng.chance(p) ? [{ type: 'E', fixed: true }] : []);
+  return [
+    rng.shuffle([{ type: 'E', adj: 0 }, R()]),
+    rng.shuffle([R(), ...maybeE(0.35)]),
+    rng.shuffle([{ type: 'E', adj: 1 }, R()]),
+    rng.shuffle([R(), ...maybeE(0.35)]),
+    rng.shuffle([{ type: 'E', adj: 2 }, R()]),
+  ];
+}
+
+const R_SETS = { 1: [2, 3, 4, 5, 6, 8, 10], 2: [1, 2, 3, 4, 5, 6, 8], 3: [1, 2, 3, 4, 5, 6, 8, 10], 4: [1, 2, 3, 4, 5, 6, 8] };
+const EL_HALF = { R: 28, E: 8 };
+
+/* ---------- generate a random circuit with integer-ampere answers ---------- */
+function generate(level, seed) {
+  const rng = RNG(seed * 7919 + level * 104729);
+  const maxE = level === 1 ? 36 : 40;
+  for (let attempt = 0; attempt < 20000; attempt++) {
+    const topo = topology(level);
+    const plan = elementPlan(level, rng);
+    const Jset = level === 2 || level === 3 ? [1, 2, 3, 4] : [1, 2, 3];
+    // pick "mesh currents" first; branch currents follow and automatically satisfy the junction rule
+    const J = topo.loops.map(() => rng.pick(Jset) * (rng.chance(0.5) ? 1 : -1));
+    const I = topo.branches.map((_, b) => topo.loops.reduce((s, L, l) => s + L.items.filter(it => it.b === b).reduce((a, it) => a + it.t * J[l], 0), 0));
+    if (I.some(v => v === 0 || Math.abs(v) > 6)) continue;
+    const branches = topo.branches.map((br, b) => ({ ...br, idx: b, I: I[b], els: plan[b].map(e => ({ ...e, seg: e.seg || 0 })) }));
+    for (const br of branches) for (const e of br.els) {
+      if (e.type === 'R') e.val = rng.pick(R_SETS[level]);
+      else if (e.fixed) { e.val = rng.int(2, 12); e.plus = rng.chance(0.5) ? 'to' : 'from'; }
+    }
+    const allR = branches.flatMap(b => b.els.filter(e => e.type === 'R').map(e => e.val));
+    if (level >= 2 && new Set(allR).size < Math.min(3, allR.length)) continue;
+    // each loop owns one battery whose value/polarity we solve for, so the loop rule holds exactly
+    let ok = true;
+    topo.loops.forEach((L, l) => {
+      let S = 0, adj = null, adjT = 0;
+      for (const it of L.items) {
+        const br = branches[it.b];
+        for (const e of br.els) {
+          if (e.type === 'E' && e.adj === l) { adj = e; adjT = it.t; continue; }
+          if (e.type === 'R') S += -(it.t * br.I) * e.val;
+          else S += (e.plus === 'to' ? 1 : -1) * it.t * e.val;
+        }
+      }
+      const A = -S;
+      if (!adj || Math.abs(A) < 2 || Math.abs(A) > maxE) { ok = false; return; }
+      adj.val = Math.abs(A); adj.plus = Math.sign(A) * adjT > 0 ? 'to' : 'from';
+    });
+    if (!ok) continue;
+    const dir0 = level === 1 ? [1] : level === 2 ? [-1, 1, -1] : branches.map(() => (rng.chance(0.5) ? 1 : -1));
+    const ans = I.map((v, b) => v * dir0[b]);
+    const wantNeg = level === 1 ? rng.chance(0.3) : rng.chance(0.8);
+    if (wantNeg && !ans.some(v => v < 0)) continue;
+    if (!wantNeg && level === 1 && ans[0] < 0) continue;
+    return finalize({ level, seed, ...topo, branches, dir0 });
+  }
+  throw new Error('generator failed');
+}
+
+/* ---------- geometry, numbering, junction detection ---------- */
+function polyCum(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + dist(pts[i - 1], pts[i])); return cum; }
+function pointAt(pts, cum, s) {
+  s = Math.max(0, Math.min(cum[cum.length - 1], s));
+  let i = 1; while (i < cum.length - 1 && cum[i] < s) i++;
+  const L = cum[i] - cum[i - 1] || 1, f = (s - cum[i - 1]) / L;
+  const a = pts[i - 1], b = pts[i];
+  return { p: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], u: [(b[0] - a[0]) / L, (b[1] - a[1]) / L], seg: i - 1 };
+}
+function subPath(pts, cum, s0, s1) {
+  const out = [pointAt(pts, cum, s0).p];
+  for (let i = 1; i < pts.length - 1; i++) if (cum[i] > s0 && cum[i] < s1) out.push(pts[i]);
+  out.push(pointAt(pts, cum, s1).p);
+  return out;
+}
+
+function finalize(c) {
+  c.nodeById = {};
+  for (const n of c.nodes) { c.nodeById[n.id] = n; n.ends = n.pts.map(() => 0); }
+  c.branches.forEach((br, b) => {
+    br.idx = b;
+    br.cum = polyCum(br.path); br.len = br.cum[br.cum.length - 1];
+    c.nodeById[br.from].ends[br.fp]++; c.nodeById[br.to].ends[br.tp]++;
+    // distribute elements evenly on their segment
+    const bySeg = {};
+    br.els.forEach(e => (bySeg[e.seg] = bySeg[e.seg] || []).push(e));
+    for (const seg in bySeg) {
+      const list = bySeg[seg], s0 = br.cum[seg], L = br.cum[+seg + 1] - s0;
+      list.forEach((e, j) => { e.s = s0 + (L * (j + 1)) / (list.length + 1); });
+    }
+    br.els.sort((a, b2) => a.s - b2.s);
+    br.els.forEach((e, k) => {
+      const at = pointAt(br.path, br.cum, e.s);
+      e.p = at.p; e.u = at.u; e.seg = at.seg; e.h = EL_HALF[e.type]; e.b = b; e.k = k;
+      e.side = br.sides[at.seg];
+    });
+    // wire pieces between elements
+    br.pieces = [];
+    let s = 0;
+    br.els.forEach(e => { br.pieces.push(subPath(br.path, br.cum, s, e.s - e.h)); s = e.s + e.h; });
+    br.pieces.push(subPath(br.path, br.cum, s, br.len));
+    // arrow: the middle of the widest free gap (away from elements and corners)
+    let best = null;
+    for (let x = 14; x <= br.len - 14; x += 3) {
+      let score = Math.min(x, br.len - x);
+      for (const e of br.els) score = Math.min(score, Math.abs(x - e.s) - e.h - 6);
+      for (let i = 1; i < br.cum.length - 1; i++) score = Math.min(score, Math.abs(x - br.cum[i]) + 4);
+      if (!best || score > best.score + 0.01) best = { x, score };
+    }
+    br.arrowS = best.x;
+    const at = pointAt(br.path, br.cum, br.arrowS);
+    br.arrowP = at.p; br.arrowU = at.u; br.arrowSide = br.sides[at.seg];
+  });
+  for (const n of c.nodes) {
+    n.deg = n.pts.map((_, i) => n.ends[i] + n.wires.filter(w => w[0] === i || w[1] === i).length);
+    n.junction = n.ends.reduce((a, v) => a + v, 0) >= 3;
+    n.dots = n.pts.map((_, i) => i).filter(i => n.deg[i] >= 3);
+  }
+  // numbering: resistors in branch/path order, batteries left→right
+  const Rs = [], Es = [];
+  c.branches.forEach(br => br.els.forEach(e => (e.type === 'R' ? Rs : Es).push(e)));
+  Es.sort((a, b) => a.p[0] - b.p[0] || a.p[1] - b.p[1]);
+  Rs.forEach((e, i) => { e.num = i + 1; e.id = 'R' + (i + 1); });
+  Es.forEach((e, i) => { e.num = i + 1; e.id = 'E' + (i + 1); });
+  c.R = Rs; c.E = Es;
+  c.Itrue = c.branches.map(br => br.I);
+  c.nB = c.branches.length; c.nL = c.loops.length;
+  c.junctions = c.nodes.filter(n => n.junction);
+  return c;
+}
+
+/* ---------- element helpers ---------- */
+const elTex = e => (e.type === 'R' ? `\\R{${e.num}}` : `\\E{${e.num}}`);
+const elUnit = e => (e.type === 'R' ? 'Ω' : 'V');
+const elDeltaFwd = (e, I) => (e.type === 'R' ? -I * e.val : e.plus === 'to' ? e.val : -e.val); // walking from→to
+
+function nodePath(node, i, j) {
+  if (i === j) return [node.pts[i]];
+  const prev = { [i]: -1 }, q = [i];
+  while (q.length) {
+    const x = q.shift();
+    for (const [a, b] of node.wires) {
+      const y = a === x ? b : b === x ? a : null;
+      if (y === null || y in prev) continue;
+      prev[y] = x; q.push(y);
+    }
+  }
+  const path = []; let x = j;
+  while (x !== -1 && x !== undefined) { path.unshift(node.pts[x]); x = prev[x]; }
+  return path;
+}
+
+/* =====================================================================
+   MODEL — equations depend on the chosen arrow & loop directions
+   ===================================================================== */
+function loopItems(L, ldir) {
+  return ldir === -1 ? L.items.slice().reverse().map(it => ({ b: it.b, t: -it.t })) : L.items.map(it => ({ ...it }));
+}
+const itemStart = (c, it) => { const br = c.branches[it.b]; return it.t === 1 ? [br.from, br.fp] : [br.to, br.tp]; };
+const itemEnd = (c, it) => { const br = c.branches[it.b]; return it.t === 1 ? [br.to, br.tp] : [br.from, br.fp]; };
+
+function routeGeometry(c, items) {
+  const pts = []; let total = 0; const elems = [];
+  const append = poly => { for (const q of poly) { const last = pts[pts.length - 1]; if (last) { if (last[0] === q[0] && last[1] === q[1]) continue; total += dist(last, q); } pts.push(q); } };
+  items.forEach((it, k) => {
+    const br = c.branches[it.b];
+    const path = it.t === 1 ? br.path : br.path.slice().reverse();
+    append([path[0]]);
+    const start = total;
+    append(path);
+    for (const e of br.els) elems.push({ e, b: it.b, t: it.t, s: start + (it.t === 1 ? e.s : br.len - e.s), h: e.h });
+    const nxt = items[(k + 1) % items.length];
+    const [nid, ip] = itemEnd(c, it), [, jp] = itemStart(c, nxt);
+    append(nodePath(c.nodeById[nid], ip, jp));
+  });
+  elems.sort((a, b) => a.s - b.s);
+  const cum = polyCum(pts);
+  return { pts, cum, len: cum[cum.length - 1], elems };
+}
+
+function loopEquation(c, l, dirs, ldir) {
+  const L = c.loops[l];
+  const items = loopItems(L, ldir);
+  const terms = [];
+  for (const it of items) {
+    const br = c.branches[it.b];
+    const els = it.t === 1 ? br.els : br.els.slice().reverse();
+    for (const e of els) {
+      if (e.type === 'R') { const along = it.t === dirs[it.b]; terms.push({ e, b: it.b, t: it.t, type: 'R', sign: along ? -1 : 1, along }); }
+      else { const up = (e.plus === 'to' ? 1 : -1) * it.t > 0; terms.push({ e, b: it.b, t: it.t, type: 'E', sign: up ? 1 : -1, up }); }
+    }
+  }
+  const nB = c.nB, zc = Array(nB).fill(0); let zr = 0;
+  for (const t of terms) { if (t.type === 'R') zc[t.b] += t.sign * t.e.val; else zr += t.sign * t.e.val; }
+  const raw = { c: zc.map(v => -v || 0), r: zr };
+  const { e: std, d } = normalize(raw);
+  const [startNode] = itemStart(c, items[0]);
+  const perBranchR = {}; terms.filter(t => t.type === 'R').forEach(t => (perBranchR[t.b] = (perBranchR[t.b] || 0) + 1));
+  const likeTerms = Object.values(perBranchR).some(v => v > 1);
+  const nConst = terms.filter(t => t.type === 'E').length;
+  return { l, items, terms, zc, zr, raw, std, d, startNode, likeTerms, nConst, route: routeGeometry(c, items) };
+}
+
+function junctionEquation(c, n, dirs) {
+  const inn = [], out = [];
+  c.branches.forEach((br, b) => {
+    if (br.to === n.id) (dirs[b] === 1 ? inn : out).push(b);
+    if (br.from === n.id) (dirs[b] === 1 ? out : inn).push(b);
+  });
+  const co = Array(c.nB).fill(0); inn.forEach(b => co[b] += 1); out.forEach(b => co[b] -= 1);
+  return { node: n, inn, out, c: co, r: 0 };
+}
+
+function buildModel(c, dirs, loopDirs) {
+  const kcl = c.junctions.map(n => junctionEquation(c, n, dirs));
+  const indep = kcl.slice(0, Math.max(0, kcl.length - 1));
+  const redundant = kcl.length > 1 ? kcl[kcl.length - 1] : null;
+  const kvl = c.loops.map((_, l) => loopEquation(c, l, dirs, loopDirs[l]));
+  const eqs = [];
+  indep.forEach(k => eqs.push({ kind: 'J', c: k.c.slice(), r: 0, src: k, label: 0 }));
+  kvl.forEach(k => eqs.push({ kind: 'L', c: k.std.c.slice(), r: k.std.r, src: k, label: 0 }));
+  eqs.forEach((e, i) => { e.label = i + 1; e.src.label = i + 1; });
+  const sol = c.Itrue.map((v, b) => v * dirs[b]);
+  const solve = solveSteps(eqs, c.nB);
+  return { kcl, indep, redundant, kvl, eqs, sol, solve };
+}
+
+/* =====================================================================
+   SOLVER — substitution + elimination, recorded as human-readable steps
+   ===================================================================== */
+function solveSteps(eqs, nB) {
+  const steps = [];
+  let sys = eqs.map(e => ({ c: e.c.slice(), r: e.r, name: String(e.label), kind: e.kind }));
+  const subs = [];
+  const tag = n => `(${n})`;
+  const line = (tex, note = '', t = '') => ({ tex, note, tag: t });
+
+  // ---- phase 1: substitute junction equations (all coefficients ±1)
+  for (;;) {
+    const je = sys.find(e => e.kind === 'J' && e.c.some(v => Math.abs(v) === 1));
+    if (!je || sys.length === 1) break;
+    const others = sys.filter(e => e !== je);
+    const cands = je.c.map((v, j) => ({ j, v, n: others.filter(o => o.c[j] !== 0).length })).filter(o => Math.abs(o.v) === 1);
+    cands.sort((a, b) => b.n - a.n || a.j - b.j);
+    const { j: v, v: cv } = cands[0];
+    const ex = je.c.map((x, j) => (j === v ? 0 : -x / cv || 0)); const ex0 = je.r / cv || 0;
+    const step = {
+      kind: 'sub', v,
+      title: `Express ${M(Itex(v))} with equation ${tag(je.name)}`,
+      note: `Every current in junction equation ${tag(je.name)} has a coefficient of ±1, so it is easy to solve it for one current. We pick ${M(Itex(v))} because it shows up in the most other equations — replacing it there removes one unknown in one go.`,
+      blocks: [{ lines: [line(texEq(je), 'junction eq.', tag(je.name)), line(`${Itex(v)} = ${texExpr(ex, ex0)}`, `solve for ${M(Itex(v))}`, '')] }],
+    };
+    const next = [];
+    for (const o of others) {
+      if (o.c[v] === 0) { next.push(o); continue; }
+      const lines = [line(texEq(o), '', tag(o.name))];
+      // substituted (show parentheses)
+      let s = '', first = true;
+      o.c.forEach((a, j) => {
+        if (!a) return;
+        if (j === v) { const m = Math.abs(a); s += (first ? (a < 0 ? '-' : '') : a < 0 ? ' - ' : ' + ') + (m === 1 ? '' : fmtN(m)) + `\\left(${texExpr(ex, ex0)}\\right)`; }
+        else s += coefTerm(a, Itex(j), first);
+        first = false;
+      });
+      lines.push(line(`${s} = ${fmtN(o.r)}`, 'substitute'));
+      // expanded
+      const pairs = [];
+      o.c.forEach((a, j) => {
+        if (!a) return;
+        if (j !== v) { pairs.push({ a, b: j }); return; }
+        ex.forEach((x, jj) => { if (x) pairs.push({ a: o.c[v] * x, b: jj }); });
+        if (ex0) pairs.push({ a: o.c[v] * ex0, b: null });
+      });
+      const needExpand = Math.abs(o.c[v]) !== 1 || pairs.length !== o.c.filter(a => a).length;
+      if (needExpand) lines.push(line(`${texPairs(pairs)} = ${fmtN(o.r)}`, 'expand'));
+      const nc = o.c.map((a, j) => (j === v ? 0 : a + o.c[v] * ex[j]) || 0);
+      const nr = o.r - o.c[v] * ex0;
+      const raw = { ...o, c: nc, r: nr };
+      lines.push(line(texEq(raw), 'collect'));
+      const { e: ne, d } = normalize(raw);
+      const newName = o.name + "'";
+      if (d !== 1) lines.push(line(texEq(ne), divNote(d), tag(newName)));
+      else lines[lines.length - 1].tag = tag(newName);
+      next.push({ ...ne, name: newName, kind: o.kind });
+      step.blocks.push({ head: `Into ${tag(o.name)}:`, lines });
+    }
+    subs.push({ v, ex, ex0, name: je.name });
+    steps.push(step);
+    sys = next;
+  }
+
+  // ---- phase 2: elimination with integer multipliers
+  const pivots = [];
+  while (sys.length > 1) {
+    const vars = [...Array(nB).keys()].filter(j => sys.some(e => e.c[j] !== 0));
+    // pick the variable that is cheapest to eliminate (smallest lcm of coefficients)
+    let bestV = vars[0], bestCost = Infinity;
+    for (const j of vars) {
+      const cs = sys.filter(e => e.c[j] !== 0).map(e => Math.abs(e.c[j]));
+      if (cs.length < 2) continue;
+      const cost = cs.reduce((a, b) => lcm(a, b), 1);
+      if (cost < bestCost) { bestCost = cost; bestV = j; }
+    }
+    const v = bestV;
+    const withV = sys.filter(e => e.c[v] !== 0).sort((a, b) => Math.abs(a.c[v]) - Math.abs(b.c[v]) || a.c.filter(x => x).length - b.c.filter(x => x).length);
+    const p = withV[0];
+    const step = {
+      kind: 'elim', v,
+      title: `Eliminate ${M(Itex(v))}`,
+      note: `${sys.length} equations, ${vars.length} unknowns. Scale the equations so that ${M(Itex(v))} has the same size coefficient in both, then add or subtract them — ${M(Itex(v))} cancels out and we are left with one unknown fewer.`,
+      blocks: [],
+    };
+    const next = [];
+    for (const e of sys) {
+      if (e === p) continue;
+      if (e.c[v] === 0) { next.push(e); continue; }
+      const Lm = lcm(Math.abs(p.c[v]), Math.abs(e.c[v]));
+      const a = Lm / Math.abs(e.c[v]), bb = Lm / Math.abs(p.c[v]);
+      const same = Math.sign(e.c[v]) === Math.sign(p.c[v]);
+      const sc = (q, k) => ({ c: q.c.map(x => x * k), r: q.r * k });
+      const lines = [];
+      const eS = sc(e, a), pS = sc(p, bb);
+      lines.push(line(texEq(eS), a === 1 ? `${tag(e.name)}` : `${a} × ${tag(e.name)}`));
+      lines.push(line(texEq(pS), bb === 1 ? `${tag(p.name)}` : `${bb} × ${tag(p.name)}`));
+      const nc = e.c.map((x, j) => (a * x + (same ? -1 : 1) * bb * p.c[j]) || 0);
+      const nr = a * e.r + (same ? -1 : 1) * bb * p.r;
+      const raw = { c: nc, r: nr };
+      lines.push(line(texEq(raw), same ? 'subtract' : 'add', ''));
+      const { e: ne, d } = normalize(raw);
+      const newName = e.name + "'";
+      if (d !== 1) lines.push(line(texEq(ne), divNote(d), tag(newName)));
+      else lines[lines.length - 1].tag = tag(newName);
+      next.push({ ...ne, name: newName, kind: 'X' });
+      step.blocks.push({ head: `${tag(e.name)} ${same ? '−' : '+'} ${tag(p.name)}, scaled so ${M(Itex(v))} cancels:`, lines });
+    }
+    pivots.push({ v, p });
+    steps.push(step);
+    sys = next;
+  }
+
+  // ---- final single equation
+  const known = {};
+  const last = sys[0];
+  const u = last.c.findIndex(x => x !== 0);
+  const valU = last.r / last.c[u];
+  known[u] = valU;
+  {
+    const lines = [];
+    if (last.c[u] !== 1) {
+      lines.push(line(texEq(last), '', tag(last.name)));
+      lines.push(line(`${Itex(u)} = \\frac{${fmtN(last.r)}}{${fmtN(last.c[u])}} = \\boxed{${fmtN(valU)}\\unit{A}}`, `÷ ${fmtN(last.c[u])}`));
+    } else lines.push(line(`${Itex(u)} = \\boxed{${fmtN(valU)}\\unit{A}}`, 'already solved', tag(last.name)));
+    steps.push({ kind: 'one', v: u, title: `Only ${M(Itex(u))} is left`, note: `One equation with one unknown — just divide.`, blocks: [{ lines }] });
+  }
+
+  // ---- back-substitution
+  const backBlocks = [];
+  for (let k = pivots.length - 1; k >= 0; k--) {
+    const { v, p } = pivots[k];
+    const lines = [line(texEq(p), '', tag(p.name))];
+    let s = '', first = true, K = 0;
+    p.c.forEach((a, j) => {
+      if (!a) return;
+      if (j === v) s += coefTerm(a, Itex(j), first);
+      else { const m = Math.abs(a); K += a * known[j]; s += (first ? (a < 0 ? '-' : '') : a < 0 ? ' - ' : ' + ') + (m === 1 ? '' : fmtN(m) + '\\cdot ') + par(known[j]); }
+      first = false;
+    });
+    lines.push(line(`${s} = ${fmtN(p.r)}`, 'plug in'));
+    const rhs = p.r - K;
+    const lhsV = coefTerm(p.c[v], Itex(v), true);
+    lines.push(line(`${lhsV} = ${fmtN(p.r)} ${K >= 0 ? '-' : '+'} ${fmtN(Math.abs(K))} = ${fmtN(rhs)}`, 'move numbers'));
+    const val = rhs / p.c[v];
+    if (p.c[v] !== 1) lines.push(line(`${Itex(v)} = \\frac{${fmtN(rhs)}}{${fmtN(p.c[v])}} = \\boxed{${fmtN(val)}\\unit{A}}`, `÷ ${fmtN(p.c[v])}`));
+    else lines[lines.length - 1].tex += ` \\;\\Rightarrow\\; \\boxed{${Itex(v)} = ${fmtN(val)}\\unit{A}}`;
+    known[v] = val;
+    backBlocks.push({ head: `Find ${M(Itex(v))} from ${tag(p.name)}:`, lines });
+  }
+  for (let k = subs.length - 1; k >= 0; k--) {
+    const { v, ex, ex0, name } = subs[k];
+    let s = '', first = true, val = ex0;
+    ex.forEach((a, j) => {
+      if (!a) return;
+      const m = Math.abs(a); val += a * known[j];
+      s += (first ? (a < 0 ? '-' : '') : a < 0 ? ' - ' : ' + ') + (m === 1 ? '' : fmtN(m) + '\\cdot ') + par(known[j]);
+      first = false;
+    });
+    if (ex0) s += (ex0 < 0 ? ' - ' : ' + ') + fmtN(Math.abs(ex0));
+    known[v] = val;
+    backBlocks.push({ head: `Find ${M(Itex(v))} from the junction equation ${tag(name)}:`, lines: [line(`${Itex(v)} = ${texExpr(ex, ex0)} = ${s || '0'} = \\boxed{${fmtN(val)}\\unit{A}}`, '')] });
+  }
+  if (backBlocks.length) steps.push({ kind: 'back', title: 'Work backwards', note: 'Now that one current is known, plug it into the earlier equations, one at a time, to unlock the rest.', blocks: backBlocks });
+  const values = [...Array(nB).keys()].map(j => known[j]);
+  return { steps, values };
+}
+
+/* =====================================================================
+   POTENTIALS, LOOP "ROLLERCOASTER", POWER
+   ===================================================================== */
+function potentials(c, groundId) {
+  const V = { [groundId]: 0 };
+  const delta = c.branches.map(br => br.els.reduce((s, e) => s + elDeltaFwd(e, br.I), 0));
+  for (let changed = true; changed;) {
+    changed = false;
+    c.branches.forEach((br, b) => {
+      if (V[br.from] !== undefined && V[br.to] === undefined) { V[br.to] = V[br.from] + delta[b]; changed = true; }
+      else if (V[br.to] !== undefined && V[br.from] === undefined) { V[br.from] = V[br.to] - delta[b]; changed = true; }
+    });
+  }
+  const pieces = c.branches.map(br => { const arr = [V[br.from]]; let v = V[br.from]; for (const e of br.els) { v += elDeltaFwd(e, br.I); arr.push(v); } return arr; });
+  const all = [...Object.values(V), ...pieces.flat()];
+  return { V, pieces, min: Math.min(...all), max: Math.max(...all), delta };
+}
+
+/* potential as a function of arc length along a loop route */
+function coasterProfile(c, route, Vstart) {
+  const pts = [[0, Vstart]]; let v = Vstart;
+  for (const r of route.elems) {
+    const br = c.branches[r.b];
+    const dv = r.t * elDeltaFwd(r.e, br.I);
+    if (r.e.type === 'R') { pts.push([r.s - r.h, v]); v += dv; pts.push([r.s + r.h, v]); }
+    else { pts.push([r.s, v]); v += dv; pts.push([r.s, v]); }
+  }
+  pts.push([route.len, v]);
+  return pts;
+}
+
+function powerTable(c) {
+  const rows = [];
+  c.branches.forEach((br, b) => br.els.forEach(e => {
+    if (e.type === 'R') rows.push({ e, b, P: br.I * br.I * e.val, role: 'heat' });
+    else { const P = e.val * br.I * (e.plus === 'to' ? 1 : -1); rows.push({ e, b, P: Math.abs(P), role: P > 0 ? 'source' : 'charging' }); }
+  }));
+  return rows;
+}
+
+/* =====================================================================
+   VIEW — SVG circuit renderer, animation loop, walker, rollercoaster
+   ===================================================================== */
+const SVGNS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs = {}, parent) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+const f1 = n => (Math.round(n * 10) / 10).toString();
+const ptsStr = pts => pts.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ');
+const pathD = pts => 'M' + pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join(' L');
+const vadd = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const vmul = (a, k) => [a[0] * k, a[1] * k];
+const SIDE = { L: [-1, 0], R: [1, 0], U: [0, -1], D: [0, 1] };
+const OPP = { L: 'R', R: 'L', U: 'D', D: 'U' };
+const curColor = b => `var(--c${b + 1})`;
+const loopColor = l => `var(--l${l + 1})`;
+const potColor = (v, min, max) => { const f = max - min < 1e-9 ? 0.5 : (v - min) / (max - min); return `color-mix(in oklch, var(--vhi) ${Math.round(f * 100)}%, var(--vlo))`; };
+
+/* ---------- global animation loop ---------- */
+const Anim = {
+  subs: new Set(), running: false,
+  add(f) { this.subs.add(f); this.kick(); return () => this.subs.delete(f); },
+  kick() {
+    if (this.running) return; this.running = true;
+    const loop = t => { if (!this.subs.size) { this.running = false; return; } for (const f of [...this.subs]) f(t); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  },
+};
+
+/* text label helper: symbol with subscript, then a value */
+function symText(parent, attrs, sym, num, rest) {
+  const t = sv('text', attrs, parent);
+  sv('tspan', { class: sym === 'ℰ' ? 'sym emf' : 'sym' }, t).textContent = sym;
+  if (num !== '' && num !== undefined) { const s = sv('tspan', { class: 'sub', dy: 6, 'font-size': '0.68em' }, t); s.textContent = num; }
+  if (rest) { const r = sv('tspan', { dy: num !== '' && num !== undefined ? -6 : 0, class: 'val' }, t); r.textContent = rest; }
+  return t;
+}
+function placeAt(p, side, d) {
+  const v = SIDE[side];
+  const a = { x: p[0] + v[0] * d, y: p[1] + v[1] * d, 'text-anchor': side === 'L' ? 'end' : side === 'R' ? 'start' : 'middle' };
+  if (side === 'L' || side === 'R') a.y += 7;
+  if (side === 'D') a.y += 15;
+  return a;
+}
+
+class CircuitView {
+  constructor(host, c, o = {}) {
+    this.c = c;
+    this.o = Object.assign({ arrows: 'assumed', labels: true, loops: false, flow: false, potential: null, mini: false, electrons: false, startFlag: null }, o);
+    this.svg = sv('svg', { viewBox: `0 0 ${c.view.w} ${c.view.h}`, class: 'circ' + (o.mini ? ' mini' : ''), role: 'img', 'aria-label': 'Circuit diagram' });
+    host.appendChild(this.svg);
+    this.flows = [];
+    if (!c._vb) c._vb = fitBox(c);
+    this.svg.setAttribute('viewBox', c._vb);
+    this.draw();
+    this.unsub = Anim.add(t => this.tick(t));
+  }
+  destroy() { this.unsub && this.unsub(); this.svg.remove(); }
+  get dirs() { return this.o.dirs || S.dirs; }
+  get ldirs() { return this.o.loopDirs || S.loopDirs; }
+  set(o) { Object.assign(this.o, o); this.draw(); }
+
+  draw() {
+    const c = this.c, o = this.o, svg = this.svg;
+    svg.innerHTML = '';
+    svg.classList.toggle('pot', !!o.potential);
+    const g = name => sv('g', { class: 'ly-' + name }, svg);
+    const gBand = g('band'), gNW = g('nwire'), gW = g('wire'), gFlow = g('flow'), gEl = g('el'), gLab = g('lab'), gArr = g('arr'), gNode = g('node'), gLoop = g('loop');
+    this.gTop = g('top');
+    this.flows = [];
+    const P = o.potential ? potentials(c, o.potential.ground) : null;
+    this.P = P;
+    const iec = (typeof S !== 'undefined' ? S.symbol : 'iec') === 'iec';
+
+    // loop bands (for highlighting a loop)
+    this.bands = c.loops.map((L, l) => {
+      const r = routeGeometry(c, loopItems(L, 1));
+      return sv('path', { d: pathD(r.pts) + ' Z', class: 'band', 'data-loop': l, style: `stroke:${loopColor(l)}` }, gBand);
+    });
+
+    // node wires
+    for (const n of c.nodes) {
+      n.wires.forEach(([i, j]) => {
+        const ln = sv('line', { x1: n.pts[i][0], y1: n.pts[i][1], x2: n.pts[j][0], y2: n.pts[j][1], class: 'wire', 'data-n': n.id }, gNW);
+        if (P) ln.style.stroke = potColor(P.V[n.id], P.min, P.max);
+      });
+    }
+    // branch wires (pieces between elements)
+    c.branches.forEach((br, b) => {
+      br.pieces.forEach((pc, j) => {
+        const pl = sv('polyline', { points: ptsStr(pc), class: 'wire', 'data-b': b }, gW);
+        if (P) pl.style.stroke = potColor(P.pieces[b][j], P.min, P.max);
+      });
+    });
+
+    // flow dots
+    if (o.flow) {
+      const k = o.electrons ? -1 : 1;
+      c.branches.forEach((br, b) => {
+        const el = sv('path', { d: pathD(br.path), class: 'flow' + (o.electrons ? ' e' : ''), 'data-b': b, style: o.electrons ? '' : `stroke:${curColor(b)}` }, gFlow);
+        this.flows.push({ el, v: k * c.Itrue[b] });
+      });
+      for (const n of c.nodes) {
+        n.wires.forEach(([i, j]) => {
+          const cur = nodeEdgeCurrent(c, n, i, j);
+          if (Math.abs(cur) < 1e-9) return;
+          const el = sv('path', { d: pathD([n.pts[i], n.pts[j]]), class: 'flow nflow' + (o.electrons ? ' e' : ''), 'data-n': n.id }, gFlow);
+          this.flows.push({ el, v: k * cur });
+        });
+      }
+    }
+
+    // elements
+    c.branches.forEach((br, b) => br.els.forEach(e => {
+      const grp = sv('g', { class: 'el el' + e.type, 'data-b': b, 'data-el': e.id }, gEl);
+      const u = e.u, n = [-u[1], u[0]];
+      const at = (a, bb) => [e.p[0] + u[0] * a + n[0] * bb, e.p[1] + u[1] * a + n[1] * bb];
+      if (e.type === 'R') {
+        if (iec) sv('polygon', { points: ptsStr([at(-28, -10), at(28, -10), at(28, 10), at(-28, 10)]), class: 'rbox' }, grp);
+        else {
+          const ts = [0, 1, 3, 5, 7, 9, 11, 12], bs = [0, 9, -9, 9, -9, 9, -9, 0];
+          sv('polyline', { points: ptsStr(ts.map((t, i) => at(-28 + (56 * t) / 12, bs[i]))), class: 'zig' }, grp);
+        }
+        sv('rect', { x: Math.min(at(-30, -16)[0], at(30, 16)[0]), y: Math.min(at(-30, -16)[1], at(30, 16)[1]), width: Math.abs(at(30, 16)[0] - at(-30, -16)[0]), height: Math.abs(at(30, 16)[1] - at(-30, -16)[1]), class: 'hit' }, grp);
+      } else {
+        const sgn = e.plus === 'to' ? 1 : -1; // + plate toward the branch's "to" end (= +u)
+        const pp = at(6 * sgn, 0), pm = at(-6 * sgn, 0);
+        sv('line', { x1: pp[0] - n[0] * 21, y1: pp[1] - n[1] * 21, x2: pp[0] + n[0] * 21, y2: pp[1] + n[1] * 21, class: 'plate plus' }, grp);
+        sv('line', { x1: pm[0] - n[0] * 11, y1: pm[1] - n[1] * 11, x2: pm[0] + n[0] * 11, y2: pm[1] + n[1] * 11, class: 'plate minus' }, grp);
+        // + and − marks on the side opposite to the label, nudged outward along the wire
+        const os = SIDE[OPP[e.side]];
+        const mark = (q, out, txt) => { const tt = sv('text', { x: q[0] + os[0] * 30 + u[0] * 8 * out, y: q[1] + os[1] * 26 + u[1] * 8 * out + 6, class: 'pm', 'text-anchor': 'middle' }, grp); tt.textContent = txt; };
+        mark(pp, sgn, '+'); mark(pm, -sgn, '−');
+        sv('rect', { x: e.p[0] - 24, y: e.p[1] - 24, width: 48, height: 48, class: 'hit' }, grp);
+      }
+      if (o.labels) {
+        const t = symText(gLab, { ...placeAt(e.p, e.side, e.type === 'R' ? 20 : 28), class: 'lab', 'data-b': b, 'data-el': e.id }, e.type === 'R' ? 'R' : 'ℰ', String(e.num), o.mini ? '' : ` = ${e.val} ${e.type === 'R' ? 'Ω' : 'V'}`);
+        t.dataset.el = e.id;
+      }
+    }));
+
+    // current arrows
+    if (o.arrows) {
+      c.branches.forEach((br, b) => {
+        const d0 = o.arrows === 'actual' ? Math.sign(c.Itrue[b]) : this.dirs[b];
+        const d = vmul(br.arrowU, d0), n = [-d[1], d[0]], p = br.arrowP;
+        const grp = sv('g', { class: 'arrow' + (o.onArrow ? ' clickable' : ''), 'data-b': b, style: `color:${curColor(b)}` }, gArr);
+        if (o.onArrow) {
+          sv('circle', { cx: p[0], cy: p[1], r: 26, class: 'ahalo' }, grp);
+          grp.addEventListener('click', () => o.onArrow(b));
+        }
+        const tip = vadd(p, vmul(d, 12)), bk = vadd(p, vmul(d, -9));
+        sv('path', { d: `M${f1(tip[0])} ${f1(tip[1])} L${f1(bk[0] + n[0] * 9)} ${f1(bk[1] + n[1] * 9)} L${f1(bk[0] - n[0] * 9)} ${f1(bk[1] - n[1] * 9)} Z`, class: 'ahead' }, grp);
+        const rest = o.arrows === 'actual' && !o.mini ? ` = ${Math.abs(c.Itrue[b])} A` : '';
+        symText(grp, { ...placeAt(p, OPP[br.arrowSide], 18), class: 'alab' }, 'I', String(b + 1), rest);
+      });
+    }
+
+    // junction dots + names
+    for (const n of c.nodes) {
+      if (!n.junction) continue;
+      n.dots.forEach(i => sv('circle', { cx: n.pts[i][0], cy: n.pts[i][1], r: 7, class: 'ndot', 'data-n': n.id }, gNode));
+      n.labels.forEach(({ pt, dir }) => {
+        const q = n.pts[pt];
+        const a = placeAt(q, dir, dir === 'U' ? 18 : 16);
+        const t = sv('text', { ...a, class: 'nlab', 'data-n': n.id }, gNode);
+        t.textContent = n.id;
+        if (P) {
+          const vt = sv('text', { x: q[0] + 16, y: dir === 'U' ? q[1] - 40 : q[1] + 60, 'text-anchor': 'middle', class: 'vlab', 'data-n': n.id }, gNode);
+          vt.textContent = `${fmtN(P.V[n.id])} V`;
+          vt.setAttribute('x', q[0]);
+        }
+      });
+      if (o.onNode) {
+        n.dots.forEach(i => { const hc = sv('circle', { cx: n.pts[i][0], cy: n.pts[i][1], r: 24, class: 'nhit', 'data-n': n.id }, gNode); hc.addEventListener('click', () => o.onNode(n.id)); });
+      }
+    }
+    if (P && o.potential.ground) {
+      const gn = c.nodeById[o.potential.ground];
+      if (!gn.junction) { // single loop: show the reference point
+        const q = gn.pts[0];
+        sv('circle', { cx: q[0], cy: q[1], r: 6, class: 'ndot' }, gNode);
+        const t = sv('text', { x: q[0] - 14, y: q[1] - 14, 'text-anchor': 'end', class: 'vlab' }, gNode); t.textContent = '0 V';
+      }
+    }
+
+    // loop indicators
+    if (o.loops) {
+      const which = o.loops === true ? c.loops.map((_, l) => l) : o.loops;
+      const boxes = [];
+      svg.querySelectorAll('text').forEach(t => { try { const b = t.getBBox(); if (b.width) boxes.push(b); } catch (e) { /* not rendered */ } });
+      which.forEach(l => {
+        const L = c.loops[l], cw = this.ldirs[l] === 1;
+        const grp = sv('g', { class: 'loopind' + (o.onLoop ? ' clickable' : ''), 'data-loop': l, style: `color:${loopColor(l)}` }, gLoop);
+        const [cx, cy] = loopSpot(c, L, boxes), r = 30;
+        const a0 = -Math.PI / 2 + 0.5, sweep = Math.PI * 1.55;
+        const a1 = cw ? a0 + sweep : a0 - sweep;
+        const P0 = [cx + r * Math.cos(a0), cy + r * Math.sin(a0)], P1 = [cx + r * Math.cos(a1), cy + r * Math.sin(a1)];
+        if (o.onLoop) { sv('circle', { cx, cy, r: 44, class: 'lhalo' }, grp); grp.addEventListener('click', () => o.onLoop(l)); }
+        sv('path', { d: `M${f1(P0[0])} ${f1(P0[1])} A${r} ${r} 0 1 ${cw ? 1 : 0} ${f1(P1[0])} ${f1(P1[1])}`, class: 'larc' }, grp);
+        const tg = cw ? [-Math.sin(a1), Math.cos(a1)] : [Math.sin(a1), -Math.cos(a1)], nn = [-tg[1], tg[0]];
+        const tip = vadd(P1, vmul(tg, 10)), bk = vadd(P1, vmul(tg, -4));
+        sv('path', { d: `M${f1(tip[0])} ${f1(tip[1])} L${f1(bk[0] + nn[0] * 8)} ${f1(bk[1] + nn[1] * 8)} L${f1(bk[0] - nn[0] * 8)} ${f1(bk[1] - nn[1] * 8)} Z`, class: 'lhead' }, grp);
+        const t = sv('text', { x: cx, y: cy + 8, 'text-anchor': 'middle', class: 'lnum' }, grp); t.textContent = String(l + 1);
+      });
+    }
+    if (o.startFlag) {
+      const q = o.startFlag;
+      sv('circle', { cx: q[0], cy: q[1], r: 11, class: 'startflag' }, this.gTop);
+    }
+    this.walker = null;
+    if (this._focus) this.focus(this._focus);
+  }
+
+  tick(t) {
+    if (!this.flows.length) return;
+    const speed = 26;
+    for (const f of this.flows) f.el.style.strokeDashoffset = String((-(t / 1000) * f.v * speed) % 26);
+  }
+
+  focus(sel) {
+    this._focus = sel;
+    this.svg.classList.toggle('focusing', !!sel);
+    if (!sel) return;
+    this.svg.querySelectorAll('[data-b],[data-n]').forEach(el => {
+      const b = el.dataset.b !== undefined ? +el.dataset.b : null, n = el.dataset.n, id = el.dataset.el;
+      const on = (b !== null && sel.b && sel.b.includes(b)) || (n && sel.n && sel.n.includes(n)) || (id && sel.el && sel.el.includes(id));
+      el.classList.toggle('on', !!on);
+    });
+  }
+  focusRoute(bs, ns, route) {
+    this.focus({ b: bs, n: ns });
+    const near = (q, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / L2)); return Math.hypot(a[0] + t * dx - q[0], a[1] + t * dy - q[1]); };
+    this.svg.querySelectorAll('.ly-nwire line').forEach(ln => {
+      const q = [(+ln.getAttribute('x1') + +ln.getAttribute('x2')) / 2, (+ln.getAttribute('y1') + +ln.getAttribute('y2')) / 2];
+      let on = false;
+      for (let i = 1; i < route.pts.length && !on; i++) on = near(q, route.pts[i - 1], route.pts[i]) < 1.5;
+      ln.classList.toggle('on', on);
+    });
+  }
+  showBand(l) { this.bands.forEach((p, i) => p.classList.toggle('show', i === l || (Array.isArray(l) && l.includes(i)))); }
+  hot(id) { this.svg.querySelectorAll('.hot').forEach(x => x.classList.remove('hot')); if (id) this.svg.querySelectorAll(`[data-el="${id}"]`).forEach(x => x.classList.add('hot')); }
+  setWalker(p, color) {
+    if (!this.walker) {
+      const g = sv('g', { class: 'walker' }, this.gTop);
+      sv('circle', { r: 16, class: 'wring' }, g);
+      sv('circle', { r: 9, class: 'wdot' }, g);
+      this.walker = g;
+    }
+    this.walker.style.color = color || 'var(--hot)';
+    this.walker.setAttribute('transform', `translate(${f1(p[0])} ${f1(p[1])})`);
+  }
+  hideWalker() { if (this.walker) { this.walker.remove(); this.walker = null; } }
+}
+
+/* place a loop symbol where it covers no label: search near the loop's centre */
+function loopSpot(c, L, boxes) {
+  if (!boxes.length) return L.c;
+  const pts = routeGeometry(c, loopItems(L, 1)).pts, xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), R = 40;
+  let best = L.c, bestCost = Infinity;
+  for (const dy of [0, -30, 30, -60, 60, -90, 90, -120, 120]) for (const dx of [0, -25, 25, -50, 50]) {
+    const x = L.c[0] + dx, y = L.c[1] + dy;
+    if (x - R < x0 || x + R > x1 || y - R < y0 || y + R > y1) continue;
+    let hit = 0;
+    for (const b of boxes) {
+      const w = Math.min(x + R, b.x + b.width) - Math.max(x - R, b.x), h = Math.min(y + R, b.y + b.height) - Math.max(y - R, b.y);
+      if (w > 0 && h > 0) hit += w * h;
+    }
+    const cost = hit * 50 + Math.hypot(dx, dy);
+    if (cost < bestCost) { bestCost = cost; best = [x, y]; }
+  }
+  return best;
+}
+
+/* crop the drawing to its content, measured once per circuit with every label shown */
+function fitBox(c) {
+  c._vb = `0 0 ${c.view.w} ${c.view.h}`;
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-99999px;top:0;width:1000px;visibility:hidden';
+  document.body.appendChild(host);
+  let vb = c._vb;
+  try {
+    const v = new CircuitView(host, c, { dirs: c.dir0, arrows: 'actual', loops: true, potential: { ground: c.ground } });
+    v.unsub();
+    const bb = v.svg.getBBox(), p = 18;
+    if (bb.width > 0 && bb.height > 0) vb = `${f1(bb.x - p)} ${f1(bb.y - p)} ${f1(bb.width + 2 * p)} ${f1(bb.height + 2 * p)}`;
+  } catch (e) { /* keep the default box */ }
+  host.remove();
+  return vb;
+}
+
+/* current along a plain-wire segment inside an (extended) node, positive i→j */
+function nodeEdgeCurrent(c, n, i, j) {
+  // component containing i when edge (i,j) is removed
+  const comp = new Set([i]), q = [i];
+  while (q.length) {
+    const x = q.shift();
+    for (const [a, b] of n.wires) {
+      if ((a === i && b === j) || (a === j && b === i)) continue;
+      const y = a === x ? b : b === x ? a : null;
+      if (y !== null && !comp.has(y)) { comp.add(y); q.push(y); }
+    }
+  }
+  let inflow = 0;
+  c.branches.forEach(br => {
+    if (br.to === n.id && comp.has(br.tp)) inflow += br.I;
+    if (br.from === n.id && comp.has(br.fp)) inflow -= br.I;
+  });
+  return inflow;
+}
+
+/* ---------- walker that moves along a loop route ---------- */
+class Tour {
+  constructor(view, route, opts = {}) {
+    this.view = view; this.route = route; this.o = opts; this.s = 0; this.token = 0;
+  }
+  place(s) {
+    this.s = s;
+    const at = pointAt(this.route.pts, this.route.cum, s);
+    this.view.setWalker(at.p, this.o.color);
+    if (this.o.coaster) this.o.coaster.setS(s);
+    if (this.o.hotOnPass) {
+      const r = this.route.elems.find(r2 => Math.abs(r2.s - s) <= r2.h + 4);
+      this.view.hot(r ? r.e.id : null);
+    }
+  }
+  animateTo(s1, speed = 230) {
+    const tok = ++this.token, s0 = this.s, dur = Math.max(1, (Math.abs(s1 - s0) / speed) * 1000);
+    return new Promise(res => {
+      let t0 = null;
+      const stop = Anim.add(t => {
+        if (tok !== this.token) { stop(); res(false); return; }
+        if (t0 === null) t0 = t;
+        const f = Math.min(1, (t - t0) / dur), e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+        this.place(s0 + (s1 - s0) * e);
+        if (f >= 1) { stop(); res(true); }
+      });
+    });
+  }
+  async loop(speed = 150, pause = 1200) {
+    const tok = ++this.token;
+    for (;;) {
+      this.place(0);
+      const t = this.token;
+      const ok = await this.animateLinear(this.route.len, speed);
+      if (!ok || t !== this.token) return;
+      await wait(pause);
+      if (t !== this.token) return;
+    }
+  }
+  animateLinear(s1, speed) {
+    const tok = this.token, s0 = this.s, dur = Math.max(1, (Math.abs(s1 - s0) / speed) * 1000);
+    return new Promise(res => {
+      let t0 = null;
+      const stop = Anim.add(t => {
+        if (tok !== this.token) { stop(); res(false); return; }
+        if (t0 === null) t0 = t;
+        const f = Math.min(1, (t - t0) / dur);
+        this.place(s0 + (s1 - s0) * f);
+        if (f >= 1) { stop(); res(true); }
+      });
+    });
+  }
+  stop() { this.token++; }
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- potential "rollercoaster" chart ---------- */
+class Coaster {
+  constructor(host, profile, opts = {}) {
+    this.profile = profile; this.o = opts;
+    const W = 640, H = 260, padL = 54, padR = 16, padT = 26, padB = 34;
+    this.W = W; this.H = H;
+    const len = profile[profile.length - 1][0];
+    const vs = profile.map(p => p[1]);
+    let vmin = Math.min(0, ...vs), vmax = Math.max(0, ...vs);
+    if (vmax - vmin < 1) vmax = vmin + 1;
+    const span = vmax - vmin; vmin -= span * 0.12; vmax += span * 0.18;
+    const X = s => padL + ((W - padL - padR) * s) / len, Y = v => padT + ((H - padT - padB) * (vmax - v)) / (vmax - vmin);
+    this.X = X; this.Y = Y;
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, class: 'coaster' }, host);
+    this.svg = svg;
+    // grid & axis
+    const step = niceStep(vmax - vmin);
+    for (let v = Math.ceil(vmin / step) * step; v <= vmax; v += step) {
+      sv('line', { x1: padL, x2: W - padR, y1: Y(v), y2: Y(v), class: v === 0 ? 'cz' : 'cg' }, svg);
+      const t = sv('text', { x: padL - 8, y: Y(v) + 4, 'text-anchor': 'end', class: 'cax' }, svg); t.textContent = `${fmtN(Math.round(v * 100) / 100)} V`;
+    }
+    const tl = sv('text', { x: padL, y: H - 8, class: 'cax' }, svg); tl.textContent = 'start';
+    const tr = sv('text', { x: W - padR, y: H - 8, 'text-anchor': 'end', class: 'cax' }, svg); tr.textContent = 'back at start';
+    // element bands + labels
+    (opts.marks || []).forEach(m => {
+      sv('rect', { x: X(m.s - m.h) - 2, y: padT - 6, width: X(m.s + m.h) - X(m.s - m.h) + 4, height: H - padT - padB + 6, class: 'cband' }, svg);
+      const t = sv('text', { x: X(m.s), y: padT - 10, 'text-anchor': 'middle', class: 'cmark' }, svg);
+      t.textContent = m.label;
+      const dv = sv('text', { x: X(m.s), y: H - padB + 16, 'text-anchor': 'middle', class: 'cdv ' + (m.dv >= 0 ? 'up' : 'down') }, svg);
+      dv.textContent = (m.dv >= 0 ? '+' : '−') + fmtN(Math.abs(m.dv)) + ' V';
+    });
+    sv('polyline', { points: ptsStr(profile.map(p => [X(p[0]), Y(p[1])])), class: 'cline-bg' }, svg);
+    this.trace = sv('polyline', { points: '', class: 'cline', style: opts.color ? `stroke:${opts.color}` : '' }, svg);
+    this.dot = sv('circle', { r: 7, class: 'cdot', style: opts.color ? `fill:${opts.color}` : '' }, svg);
+    this.vtext = sv('text', { class: 'cval', 'text-anchor': 'start' }, svg);
+    this.setS(0);
+  }
+  valueAt(s) {
+    const p = this.profile;
+    for (let i = 1; i < p.length; i++) {
+      if (s <= p[i][0]) { const a = p[i - 1], b = p[i]; if (b[0] - a[0] < 1e-9) return b[1]; return a[1] + ((b[1] - a[1]) * (s - a[0])) / (b[0] - a[0]); }
+    }
+    return p[p.length - 1][1];
+  }
+  setS(s) {
+    const pts = [];
+    for (const q of this.profile) { if (q[0] <= s) pts.push(q); else break; }
+    const v = this.valueAt(s);
+    pts.push([s, v]);
+    this.trace.setAttribute('points', ptsStr(pts.map(q => [this.X(q[0]), this.Y(q[1])])));
+    this.dot.setAttribute('cx', this.X(s)); this.dot.setAttribute('cy', this.Y(v));
+    const x = this.X(s);
+    this.vtext.setAttribute('x', Math.min(x + 12, this.W - 70)); this.vtext.setAttribute('y', this.Y(v) - 12);
+    this.vtext.textContent = `${fmtN(Math.round(v * 10) / 10)} V`;
+  }
+}
+function niceStep(span) { const raw = span / 5, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+/* =====================================================================
+   PAGES — every step is generated from the current circuit
+   ===================================================================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const SUBD = '₀₁₂₃₄₅₆₇₈₉';
+const subNum = n => String(n).split('').map(d => SUBD[+d] || d).join('');
+const elName = e => (e.type === 'R' ? 'R' : 'ℰ') + subNum(e.num);
+const elM = e => M(elTex(e));
+const IM = b => M(Itex(b));
+const valM = e => M(`${elTex(e)} = ${e.val}\\unit{${elUnit(e)}}`);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+let CLEAN = [];
+const onLeave = f => CLEAN.push(f);
+function view(host, opts) { const v = new CircuitView(host, S.circ, opts); onLeave(() => v.unsub && v.unsub()); return v; }
+function header(kicker, title, lede) {
+  return `<header class="ph"><div class="kicker">${kicker}</div><h1>${title}</h1>${lede ? `<p class="lede">${lede}</p>` : ''}</header>`;
+}
+function kick(short) {
+  const i = PAGES.findIndex(p => p.id === S.page);
+  return `Step ${i} of ${PAGES.length - 1} · ${short}`;
+}
+function mlines(lines, fresh) {
+  return `<div class="mlines">${lines.map(l => `<div class="ln${fresh ? ' fresh' : ''}"><div class="note">${l.note || ''}</div><div class="eq">${M(l.tex)}</div><div class="tag">${l.tag || ''}</div></div>`).join('')}</div>`;
+}
+const sumTex = list => (list.length ? list.map(Itex).join(' + ') : '0');
+const nodeWord = id => { const n = S.circ.nodeById[id]; return n.junction ? `junction <b>${id}</b>` : 'the top-left corner'; };
+function actualWay(b) {
+  const c = S.circ, br = c.branches[b], I = c.Itrue[b];
+  if (br.from === br.to) return I > 0 ? 'clockwise' : 'counter-clockwise';
+  return I > 0 ? `from ${br.from} to ${br.to}` : `from ${br.to} to ${br.from}`;
+}
+function arrowWay(b, d) {
+  const br = S.circ.branches[b];
+  if (br.from === br.to) return d > 0 ? 'clockwise' : 'counter-clockwise';
+  return d > 0 ? `from ${br.from} to ${br.to}` : `from ${br.to} to ${br.from}`;
+}
+function branchNodes(b) { const br = S.circ.branches[b]; return [br.from, br.to]; }
+function loopNodes(l) { const c = S.circ; return [...new Set(c.loops[l].items.flatMap(it => branchNodes(it.b)))]; }
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); }
+
+/* ---------- Exercise ---------- */
+function pgExercise(el) {
+  const c = S.circ, lv = LEVELS[S.level];
+  const want = c.Itrue.map((v, b) => v * c.dir0[b]);
+  const unknowns = c.branches.map((_, b) => IM(b)).join(', ');
+  el.innerHTML = `<div class="inner">
+    <div class="ex-head"><div>
+      <div class="kicker">Exercise · Level ${S.level} — ${lv.name}</div>
+      <h1>${c.nB === 1 ? 'Find the current' : 'Find every current'}</h1>
+      <p class="lede">All batteries and resistors are given. Find ${unknowns} in the direction of ${c.nB === 1 ? 'its arrow' : 'the arrows'}. If a current really flows against its arrow, the answer just comes out negative.</p>
+    </div>
+    <button class="btn primary big" data-act="solve">Let's solve it together <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    <div class="ex-grid">
+      <div class="card hero"><div class="hero-host"></div></div>
+      <div class="ex-side">
+        <div class="card"><h3>Difficulty</h3>
+          <div class="levels">${Object.entries(LEVELS).map(([n, L]) => `<button class="lvl${+n === S.level ? ' on' : ''}" data-lvl="${n}"><b>${n} · ${L.name}</b><span>${L.tag}</span></button>`).join('')}</div>
+          <p class="small" style="margin:8px 0 0">${lv.blurb}</p>
+          <div class="row" style="margin-top:10px"><button class="btn" data-act="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>New circuit</button><span class="small">same level, new numbers</span></div>
+        </div>
+        <div class="card"><h3>Your answer</h3>
+          <div class="ans">${c.branches.map((_, b) => `<div class="ans-row" data-b="${b}"><label for="ans${b}">${M(Itex(b) + ' =')}</label><input id="ans${b}" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="?" value="${S.answers[b] ?? ''}"><span>${M('\\mathrm{A}')}</span><span class="mark"></span></div>`).join('')}</div>
+          <div class="row" style="margin-top:12px"><button class="btn primary" data-act="check">Check</button></div>
+          <div class="fb"></div>
+          <div class="rv-box">
+            <div class="rv-head"><span>Stuck? Peek at one answer</span><button class="linkbtn" data-act="revealAll"></button></div>
+            <div class="rv-grid">${want.map((v, b) => `<button class="rv${S.revealed.has(b) ? ' open' : ''}" data-rv="${b}" aria-pressed="${S.revealed.has(b)}" aria-label="Reveal the answer for I${subNum(b + 1)}"><span class="rv-q">${M(Itex(b) + ' = ?')}<small>click to reveal</small></span><span class="rv-a">${M(`${Itex(b)} = ${fmtN(v)}\\unit{A}`)}</span></button>`).join('')}</div>
+          </div>
+        </div>
+        <div class="card soft"><h3>Circuit code</h3>
+          <p class="small" style="margin-top:0">Everyone who opens this code gets exactly this circuit, handy for a class.</p>
+          <div class="code-box"><span class="code">${code()}</span><button class="btn ghost" data-act="copy">Copy</button></div>
+          <div class="code-box" style="margin-top:8px"><input id="codeIn" placeholder="L3-1234" aria-label="Circuit code"><button class="btn" data-act="load">Open</button></div>
+        </div>
+      </div>
+    </div></div>`;
+  view($('.hero-host', el), { dirs: c.dir0, arrows: 'assumed' });
+  const fb = $('.fb', el);
+  const parse = s => { s = String(s).replace(/[−–]/g, '-').replace(',', '.').replace(/[aA\s]/g, ''); if (!s) return null; const v = Number(s); return Number.isFinite(v) ? v : NaN; };
+  $$('.ans-row input', el).forEach(inp => inp.addEventListener('input', () => { S.answers[+inp.closest('.ans-row').dataset.b] = inp.value; inp.closest('.ans-row').className = 'ans-row'; inp.closest('.ans-row').querySelector('.mark').textContent = ''; }));
+  $$('.ans-row input', el).forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); }));
+  function check() {
+    let ok = 0, sign = [], empty = 0;
+    c.branches.forEach((_, b) => {
+      const row = $(`.ans-row[data-b="${b}"]`, el), v = parse($('input', row).value), mk = $('.mark', row);
+      if (v === null) { empty++; row.className = 'ans-row'; mk.textContent = ''; return; }
+      if (Math.abs(v - want[b]) < 0.011) { ok++; row.className = 'ans-row ok'; mk.textContent = '✓'; }
+      else if (Math.abs(v + want[b]) < 0.011) { sign.push(b); row.className = 'ans-row sign'; mk.textContent = '±'; }
+      else { row.className = 'ans-row no'; mk.textContent = '✗'; }
+    });
+    if (ok === c.nB) { fb.innerHTML = `<span style="color:var(--good);font-weight:700">All correct, well done!</span> The walkthrough still shows every step, plus an energy check at the end.`; c.branches.forEach((_, b) => setTimeout(() => setRv(b, true), 150 + b * 160)); }
+    else if (empty === c.nB) fb.textContent = 'Type a number into each box first (negative answers are allowed).';
+    else {
+      let s = `${ok} of ${c.nB} correct.`;
+      if (sign.length) s += ` For ${sign.map(IM).join(', ')} the size is right but the sign is wrong. Check the sign rule for walking with or against an arrow.`;
+      else s += ' Peek at one answer below, or press <b>Let\u2019s solve it together</b> to work through it step by step.';
+      fb.innerHTML = s;
+    }
+  }
+  el.addEventListener('click', e => {
+    const rv = e.target.closest('[data-rv]'); if (rv) { const b = +rv.dataset.rv; setRv(b, !S.revealed.has(b)); return; }
+    const t = e.target.closest('[data-act],[data-lvl]'); if (!t) return;
+    if (t.dataset.lvl) { newCircuit(+t.dataset.lvl); return; }
+    const a = t.dataset.act;
+    if (a === 'solve') next();
+    if (a === 'new') newCircuit(S.level);
+    if (a === 'check') check();
+    if (a === 'revealAll') { const show = S.revealed.size < c.nB; c.branches.forEach((_, b) => setTimeout(() => setRv(b, show), b * 110)); }
+    if (a === 'copy') copyText(code());
+    if (a === 'load') { const p = parseCode($('#codeIn', el).value); if (!p) { toast('Codes look like L2-4821'); return; } load(p.level, p.seed); go('ex', { instant: true }); }
+  });
+  function setRv(b, on) {
+    if (on) S.revealed.add(b); else S.revealed.delete(b);
+    const card = $(`.rv[data-rv="${b}"]`, el);
+    if (card) { card.classList.toggle('open', on); card.setAttribute('aria-pressed', on); }
+    syncRvAll();
+  }
+  function syncRvAll() { const all = S.revealed.size === c.nB; $('[data-act="revealAll"]', el).textContent = all ? 'Hide all' : 'Reveal all'; $('.rv-head span', el).textContent = all ? 'The answers' : 'Stuck? Peek at one answer'; }
+  syncRvAll();
+  $('#codeIn', el).addEventListener('keydown', e => { if (e.key === 'Enter') $('[data-act="load"]', el).click(); });
+}
+
+/* ---------- The two rules ---------- */
+function demoCircuit() {
+  const t = topology(1);
+  const br = { ...t.branches[0], idx: 0, I: 2, els: [{ type: 'R', val: 4, seg: 0 }, { type: 'R', val: 2, seg: 1 }, { type: 'E', val: 12, plus: 'to', seg: 3 }] };
+  return finalize({ level: 1, seed: 0, ...t, branches: [br], dir0: [1] });
+}
+function signSVG(kind, right) {
+  const W = 'stroke:var(--wire)';
+  let s = '<svg viewBox="0 0 96 54" aria-hidden="true">';
+  if (kind === 'R') s += `<path d="M4 34H30M66 34H92" style="${W};stroke-width:2.6;fill:none"/><rect x="30" y="27" width="36" height="14" style="fill:var(--card);${W};stroke-width:2.6"/><path d="M90 34l-10-5.5v11z" style="fill:var(--c1)"/><text x="76" y="52" style="fill:var(--c1);font:italic 700 12px var(--serif)">I</text>`;
+  else s += `<path d="M4 34H43M54 34H92" style="${W};stroke-width:2.6"/><path d="M44 26v16" style="${W};stroke-width:6"/><path d="M53 19v30" style="${W};stroke-width:2.4"/><text x="32" y="50" style="fill:var(--muted);font:700 13px var(--sans)">−</text><text x="58" y="50" style="fill:var(--muted);font:700 13px var(--sans)">+</text>`;
+  s += right ? '<path d="M14 9H74" style="stroke:var(--hot);stroke-width:2.6;stroke-dasharray:5 4"/><path d="M84 9l-10-5.5v11z" style="fill:var(--hot)"/>'
+    : '<path d="M22 9H82" style="stroke:var(--hot);stroke-width:2.6;stroke-dasharray:5 4"/><path d="M12 9l10-5.5v11z" style="fill:var(--hot)"/>';
+  return s + '</svg>';
+}
+function signTiles() {
+  return `<div class="signs">
+    <div class="sign-tile">${signSVG('R', true)}<div class="r">Walk <b>with</b> the current arrow through a resistor: ${M('-IR')} <span class="badge down">drop</span></div></div>
+    <div class="sign-tile">${signSVG('R', false)}<div class="r">Walk <b>against</b> the current arrow: ${M('+IR')} <span class="badge up">rise</span></div></div>
+    <div class="sign-tile">${signSVG('E', true)}<div class="r">Through a battery from <b>−</b> to <b>+</b> (short plate to long plate): ${M('+\\emf')} <span class="badge up">rise</span></div></div>
+    <div class="sign-tile">${signSVG('E', false)}<div class="r">Through a battery from <b>+</b> to <b>−</b>: ${M('-\\emf')} <span class="badge down">drop</span></div></div>
+  </div>
+  <p class="small" style="margin-top:8px">The dashed orange arrow is the direction you <i>walk</i>. The battery's sign depends only on which plate you reach first, not on the current.</p>`;
+}
+function pgRules(el) {
+  el.innerHTML = `<div class="inner">${header(kick('The toolkit'), 'Two rules are all you need', 'Gustav Kirchhoff (1845) noticed two things that are always true in a circuit. One is about <b>junctions</b>, the other about <b>loops</b>. Together they give exactly as many equations as there are unknown currents.')}
+    <div class="two">
+      <div class="card junction-demo"><h3><span class="num">Rule 1</span>Junction rule</h3>
+        <p>Whatever current flows <b>into</b> a junction must flow <b>out</b> again. Charge cannot pile up anywhere, just like water at a pipe split.</p>
+        <div style="text-align:center">${MD('\\sum I_{\\text{in}} = \\sum I_{\\text{out}}')}</div>
+        <svg viewBox="0 0 420 210" class="jd">
+          <path d="M20 130H210M210 16V130M210 130H400" style="stroke:var(--wire);stroke-width:4;fill:none;stroke-linecap:round"/>
+          <path class="jf" data-k="a" d="M20 130H206" style="stroke:var(--c1)"/><path class="jf" data-k="b" d="M210 16V126" style="stroke:var(--c2)"/><path class="jf" data-k="o" d="M214 130H400" style="stroke:var(--c3)"/>
+          <circle cx="210" cy="130" r="8" style="fill:var(--wire)"/>
+          <text x="60" y="160" class="jt" style="fill:var(--c1)">in: <tspan data-v="a"></tspan></text>
+          <text x="225" y="50" class="jt" style="fill:var(--c2)">in: <tspan data-v="b"></tspan></text>
+          <text x="290" y="160" class="jt" style="fill:var(--c3)">out: <tspan data-v="o"></tspan></text>
+        </svg>
+        <div class="slider-row"><span style="color:var(--c1)">left in</span><input type="range" min="0" max="5" step="0.5" value="2" data-s="a"><span data-o="a"></span></div>
+        <div class="slider-row"><span style="color:var(--c2)">top in</span><input type="range" min="0" max="5" step="0.5" value="3" data-s="b"><span data-o="b"></span></div>
+        <div class="jeq" style="text-align:center"></div>
+      </div>
+      <div class="card loop-demo"><h3><span class="num">Rule 2</span>Loop rule</h3>
+        <p>Walk once around any closed loop and add up every voltage <b>rise</b> and <b>drop</b>. You come back to the same point, so you are back at the same "height": the total is zero.</p>
+        <div style="text-align:center">${MD('\\sum \\Delta V = 0')}</div>
+        <div class="dhost"></div>
+        <div class="chost"></div>
+        <p class="small">Like a rollercoaster: the battery is the lift hill (+12 V), the resistors are the drops (−8 V, −4 V). One lap is ${M('12 - 8 - 4 = 0')}.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>The four signs for the loop walk</h3>${signTiles()}</div>
+    <div class="callout" style="margin-top:18px"><b>How we'll use them</b>For a circuit with ${M('b')} branches (unknown currents) and ${M('n')} junctions: the junction rule gives ${M('n-1')} new equations and the loop rule gives the remaining ${M('b-n+1')}. That is ${M('b')} equations for ${M('b')} unknowns.</div>
+  </div>`;
+  // junction demo
+  const val = { a: 2, b: 3 };
+  const flows = $$('.jf', el);
+  flows.forEach(f => { f.setAttribute('fill', 'none'); f.style.strokeWidth = 8; f.style.strokeLinecap = 'round'; f.style.strokeDasharray = '0 24'; });
+  const upd = () => {
+    val.o = val.a + val.b;
+    for (const k of ['a', 'b', 'o']) { $(`[data-v="${k}"]`, el).textContent = `${fmtN(val[k])} A`; const o = $(`[data-o="${k}"]`, el); if (o) o.textContent = `${fmtN(val[k])} A`; }
+    $('.jeq', el).innerHTML = MD(`\\cl{ci1}{${fmtN(val.a)}} + \\cl{ci2}{${fmtN(val.b)}} = \\cl{ci3}{${fmtN(val.o)}}\\unit{A}`);
+  };
+  $$('input[type=range]', el).forEach(r => r.addEventListener('input', () => { val[r.dataset.s] = +r.value; upd(); }));
+  upd();
+  onLeave(Anim.add(t => flows.forEach(f => { f.style.strokeDashoffset = String((-(t / 1000) * val[f.dataset.k] * 22) % 24); })));
+  // loop demo
+  const d = demoCircuit();
+  const v = new CircuitView($('.dhost', el), d, { dirs: [1], arrows: 'actual', flow: true });
+  onLeave(() => v.unsub());
+  const route = routeGeometry(d, loopItems(d.loops[0], 1));
+  const marks = route.elems.map(r => ({ s: r.s, h: r.e.type === 'R' ? r.h : 3, label: elName(r.e), dv: r.t * elDeltaFwd(r.e, d.branches[r.b].I) }));
+  const co = new Coaster($('.chost', el), coasterProfile(d, route, 12), { marks, color: 'var(--hot)' });
+  const tour = new Tour(v, route, { coaster: co, color: 'var(--hot)' });
+  tour.loop(170, 900);
+  onLeave(() => tour.stop());
+}
+
+/* ---------- Junctions, branches, loops ---------- */
+function pgMap(el) {
+  const c = S.circ, n = c.junctions.length, b = c.nB, L = b - n + 1;
+  const single = n === 0;
+  el.innerHTML = `<div class="inner">${header(kick('Read the circuit'), 'Find the junctions, branches and loops', 'Before writing any equation, take stock: where does the current split, which wires carry their own current, and which loops can we walk around? <span class="small">Hover a list item to highlight it.</span>')}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
+    <div class="txt">
+      <div class="card"><h3><span class="num">1</span>Junctions</h3>
+        ${single ? `<p>There are <b>no junctions</b>: nowhere do three or more wires meet. The current has only one path, so it is the <b>same everywhere</b> in the loop: one unknown, ${IM(0)}.</p>`
+      : `<p>A junction is a point where <b>three or more</b> wires meet (the big dots). This circuit has ${plural(n, 'junction', 'junctions')}: ${c.junctions.map(j => `<b>${j.id}</b>`).join(', ')}.</p>
+        <ul class="hoverlist">${c.junctions.map(j => `<li data-n="${j.id}"><b>${j.id}</b>: ${plural(c.branches.filter(br => br.from === j.id || br.to === j.id).length, 'branch meets', 'branches meet')} here</li>`).join('')}</ul>
+        ${S.level === 4 ? `<p class="small">Junctions <b>A</b> and <b>C</b> are drawn stretched out: the plain wires between their points have no resistor or battery, so every point on them is the same junction. Junction C is the whole bottom wire.</p>` : ''}`}
+      </div>
+      <div class="card"><h3><span class="num">2</span>Branches</h3>
+        ${single ? `<p>The whole loop is one branch, containing ${c.branches[0].els.map(elM).join(', ')}.</p>`
+      : `<p>A branch is a path from one junction to the next. All its elements are in series, so <b>one current flows through the whole branch</b>. We give each branch its own name.</p>
+        <ul class="hoverlist">${c.branches.map((br, i) => `<li data-b="${i}"><span style="color:${curColor(i)};font-weight:700">${IM(i)}</span> flows between ${br.from} and ${br.to}, through ${br.els.map(elM).join(', ')}</li>`).join('')}</ul>`}
+      </div>
+      <div class="card"><h3><span class="num">3</span>Loops</h3>
+        <p>${c.nL === 1 ? 'There is one loop to walk around.' : `We use the ${plural(c.nL, 'window', 'windows')} of the circuit as loops. Each window contains at least one branch the others don't, so each gives a <b>new</b> equation. (The big outer loop works too, but it is just the windows added together.)`}</p>
+        <ul class="hoverlist">${c.loops.map((_, l) => `<li data-l="${l}"><b style="color:${loopColor(l)}">Loop ${l + 1}</b>: through ${c.loops[l].items.map(it => IM(it.b)).join(', ')}</li>`).join('')}</ul>
+      </div>
+      <div class="card soft"><h3>Count equations and unknowns</h3>
+        ${single ? mlines([{ tex: '1 \\text{ unknown current } \\I{1}', note: 'unknowns' }, { tex: '1 \\text{ loop equation}', note: 'loop rule' }])
+      : mlines([
+        { tex: `b = ${b}`, note: 'branches', tag: `${b} unknowns` },
+        { tex: `n - 1 = ${n} - 1 = ${n - 1}`, note: 'junction rule', tag: plural(n - 1, 'equation', 'equations') },
+        { tex: `b - n + 1 = ${b} - ${n} + 1 = ${L}`, note: 'loop rule', tag: plural(L, 'equation', 'equations') },
+        { tex: `${n - 1} + ${L} = ${b} \\;\\checkmark`, note: 'total', tag: '' },
+      ])}
+        ${single ? '' : `<p class="small">Why only ${M('n-1')} junction equations? The last junction's equation always follows from the others. You'll see it on the junction page.</p>`}
+      </div>
+    </div></div></div>`;
+  const v = view($('.host', el), { arrows: 'assumed', loops: true });
+  $$('[data-n],[data-b],[data-l]', $('.txt', el)).forEach(li => {
+    li.addEventListener('mouseenter', () => {
+      if (li.dataset.n) { const id = li.dataset.n; v.focus({ n: [id], b: c.branches.map((br, i) => (br.from === id || br.to === id ? i : -1)).filter(i => i >= 0) }); }
+      else if (li.dataset.b) { const i = +li.dataset.b; v.focus({ b: [i], n: [] }); }
+      else { const l = +li.dataset.l; v.focus({ b: c.loops[l].items.map(it => it.b), n: loopNodes(l) }); v.showBand(l); }
+    });
+    li.addEventListener('mouseleave', () => { v.focus(null); v.showBand(-1); });
+  });
+}
+
+/* ---------- Directions ---------- */
+function pgDirs(el) {
+  const c = S.circ;
+  el.innerHTML = `<div class="inner">${header(kick('Choose directions'), 'Give every current an arrow. Any direction will do.', 'We don\u2019t know yet which way the currents really flow, and we don\u2019t need to. <b>Click an arrow</b> to flip it, and <b>click a loop symbol</b> to change the walking direction.')}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div>
+      <div class="row" style="margin-top:10px"><button class="btn" data-act="reset">Reset to the exercise's arrows</button><span class="kbd-hint">Arrows and loop symbols are clickable</span></div></div>
+    <div class="txt">
+      <div class="card"><h3>Why guessing is allowed</h3>
+        <p>An arrow is just a promise about how we will <b>count</b>: "current in this direction is positive". If the real current flows the other way, the answer comes out <b>negative</b>. The size is still right, and the minus sign tells you the true direction.</p>
+        <p>So a negative answer is <b>not a mistake</b>. It is information.</p>
+      </div>
+      <div class="card"><h3>Loop directions</h3>
+        <p>For each loop we also pick a <b>walking direction</b>. Clockwise is the usual habit, but either works: walking the other way just flips every sign in that loop's equation, which says the same thing.</p>
+        <div class="loopstate"></div>
+      </div>
+      <div class="card"><h3>Peek: what the answers would be</h3>
+        <p class="small" style="margin-top:0">Hover to reveal. Flip an arrow and watch: only the <b>sign</b> of that current changes, never the size.</p>
+        <div class="peek" tabindex="0"></div>
+      </div>
+      <div class="callout warn dwarn" hidden><b>Heads up</b>Your arrows now differ from the exercise, so some answers will have the opposite sign from the exercise's answers. That's fine: at the end we compare both.</div>
+      <div class="callout"><b>Important</b>Once chosen, <b>keep the same arrows</b> for every equation, from the junction rule to the last loop. Changing them halfway is the classic way to get nonsense.</div>
+    </div></div></div>`;
+  let v;
+  const refresh = () => {
+    S.model = buildModel(c, S.dirs, S.loopDirs);
+    v.draw();
+    $('.peek', el).innerHTML = S.model.sol.map((x, b) => `<span class="chip">${M(`${Itex(b)} = ${fmtN(x)}\\unit{A}`)}</span>`).join('');
+    $('.loopstate', el).innerHTML = c.loops.map((_, l) => `<span class="chip-l" style="color:${loopColor(l)};font-weight:700">Loop ${l + 1}</span>: ${S.loopDirs[l] === 1 ? 'clockwise' : 'counter-clockwise'}`).join('<br>');
+    $('.dwarn', el).hidden = S.dirs.every((d, b) => d === c.dir0[b]);
+  };
+  v = view($('.host', el), {
+    arrows: 'assumed', loops: true,
+    onArrow: b => { S.dirs[b] *= -1; refresh(); toast(`${'I' + subNum(b + 1)} now points ${arrowWay(b, S.dirs[b])}`); },
+    onLoop: l => { S.loopDirs[l] *= -1; refresh(); },
+  });
+  refresh();
+  $('[data-act="reset"]', el).addEventListener('click', () => { S.dirs = c.dir0.slice(); S.loopDirs = c.loops.map(() => 1); refresh(); });
+}
+
+/* ---------- Junction rule ---------- */
+function pgKCL(el) {
+  const c = S.circ, m = S.model;
+  const card = (k, redundant) => {
+    const io = `${sumTex(k.inn)} = ${sumTex(k.out)}`;
+    const lines = [{ tex: io, note: 'in = out' }];
+    if (!redundant) lines.push({ tex: texEq(k), note: 'all on one side', tag: `(${k.label})` });
+    let extra = '';
+    if (!k.inn.length || !k.out.length) extra = `<p class="small">All our arrows point ${k.inn.length ? 'into' : 'out of'} ${k.node.id}. That can't really happen, so at least one of these currents must come out negative. The equation is still perfectly valid.</p>`;
+    let why = '';
+    if (redundant) why = m.indep.length === 1 ? `<p>This is equation (${m.indep[0].label}) again, just multiplied by ${M('-1')}. It adds nothing new, so we leave it out.</p>`
+      : `<p>Add equations ${m.indep.map(q => `(${q.label})`).join(' and ')} and flip the sign: you get exactly this one. Nothing new, so we leave it out.</p>`;
+    return `<div class="card focusable-card${redundant ? ' dimcard' : ''}" data-n="${k.node.id}">
+      <h3>${redundant ? '<span class="num">not needed</span>' : `<span class="num">(${k.label})</span>`}Junction ${k.node.id}</h3>
+      <p>Arrows pointing <b>into</b> ${k.node.id}: ${k.inn.length ? k.inn.map(IM).join(', ') : '<i>none</i>'}. Arrows pointing <b>out</b>: ${k.out.length ? k.out.map(IM).join(', ') : '<i>none</i>'}.</p>
+      ${mlines(lines)}${extra}${why}</div>`;
+  };
+  el.innerHTML = `<div class="inner">${header(kick('Junction rule'), 'Write the junction equations', `At each junction, add the currents whose arrows point in and set them equal to the ones pointing out. We use <b>our arrows</b>, not the true directions, which we don't know yet. With ${M(`n = ${c.junctions.length}`)} junctions we need ${M(`n - 1 = ${c.junctions.length - 1}`)} ${c.junctions.length - 1 === 1 ? 'equation' : 'equations'}.`)}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
+    <div class="txt">${m.indep.map(k => card(k, false)).join('')}${m.redundant ? card(m.redundant, true) : ''}
+      <div class="callout"><b>Why the last junction is redundant</b>Every branch connects two junctions. It leaves one and enters the other. Adding all junction equations, every current appears once with ${M('+')} and once with ${M('-')}, so the sum is ${M('0 = 0')}. The last equation is always the others in disguise.</div>
+    </div></div></div>`;
+  const v = view($('.host', el), { arrows: 'assumed' });
+  $$('.focusable-card', el).forEach(cd => {
+    const k = [...m.kcl].find(q => q.node.id === cd.dataset.n);
+    cd.addEventListener('mouseenter', () => v.focus({ n: [k.node.id], b: [...k.inn, ...k.out] }));
+    cd.addEventListener('mouseleave', () => v.focus(null));
+  });
+}
+
+/* ---------- Loop k ---------- */
+function termTex(t, sym, first) {
+  const sg = first ? (t.sign < 0 ? '-' : '') : t.sign < 0 ? ' - ' : ' + ';
+  if (t.type === 'R') return sg + (sym ? `${elTex(t.e)}\\,${Itex(t.b)}` : `${t.e.val === 1 ? '' : t.e.val}${Itex(t.b)}`);
+  return sg + (sym ? elTex(t.e) : String(t.e.val));
+}
+function termWhy(t) {
+  const I = IM(t.b);
+  if (t.type === 'R') return t.along
+    ? `Walking <b>with</b> the arrow of ${I}. Current loses energy in a resistor, so the potential <b>drops</b> by ${M(`${elTex(t.e)}\\,${Itex(t.b)}`)}.`
+    : `Walking <b>against</b> the arrow of ${I}. That's uphill against the current, so the potential <b>rises</b> by ${M(`${elTex(t.e)}\\,${Itex(t.b)}`)}.`;
+  return t.up ? 'Entering at the short <b>−</b> plate, leaving at the long <b>+</b> plate. The battery lifts the potential: a <b>rise</b>.'
+    : 'Entering at the long <b>+</b> plate, leaving at the short <b>−</b> plate: a <b>drop</b>.';
+}
+function pgLoop(el, l) {
+  const c = S.circ, m = S.model, k = m.kvl[l], color = loopColor(l);
+  const dirWord = S.loopDirs[l] === 1 ? 'clockwise' : 'counter-clockwise';
+  const tag = `(${k.label})`;
+  const sym = k.terms.map((t, i) => termTex(t, true, i === 0)).join('') + ' = 0';
+  const num = k.terms.map((t, i) => termTex(t, false, i === 0)).join('') + ' = 0';
+  const cur = k.zc.map((a, b) => ({ a, b })).filter(p => p.a);
+  const lines = [{ tex: sym, note: 'add up all terms' }, { tex: num, note: 'put in values' }];
+  if (k.likeTerms || k.nConst > 1) lines.push({ tex: `${texPairs([...cur, { a: k.zr, b: null }])} = 0`, note: 'combine like terms' });
+  const moved = { c: k.zc, r: -k.zr };
+  lines.push({ tex: texEq(moved), note: 'numbers to the right' });
+  const nz = normalize(moved);
+  if (nz.d !== 1) lines.push({ tex: texEq(nz.e), note: divNote(nz.d), tag });
+  else lines[lines.length - 1].tag = tag;
+  const sharedE = k.terms.filter(t => t.type === 'E' && c.loops.filter(L => L.items.some(it => it.b === t.b)).length > 1);
+  const title = c.nL === 1 ? 'Walk around the loop' : `Walk around loop ${l + 1}`;
+  el.innerHTML = `<div class="inner">${header(kick(c.nL === 1 ? 'Loop rule' : `Loop ${l + 1} of ${c.nL}`), title, `Start at ${nodeWord(k.startNode)} (the dashed circle) and walk ${dirWord}, the way the <span style="color:${color};font-weight:700">loop ${c.nL > 1 ? l + 1 : ''} symbol</span> points. Every time you pass an element, write down a term. Back at the start, the terms must add up to zero.`)}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
+    <div class="txt">
+      <div class="card"><h3>The walk, element by element</h3>
+        <div class="row" style="margin:6px 0 4px">
+          <button class="btn primary" data-act="walk"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>Walk</button>
+          <button class="btn" data-act="step">Next element</button>
+          <button class="btn ghost" data-act="reset">Reset</button>
+          <button class="btn ghost" data-act="all">Show everything</button>
+        </div>
+        <label class="row small" style="margin:2px 0 6px;gap:6px;cursor:pointer"><input type="checkbox" class="quiz" ${S.quiz ? 'checked' : ''}> Let me guess each sign (+ or −) before it's shown</label>
+        <table class="walk-table"><thead><tr><th></th><th>Element</th><th>What happens</th><th style="text-align:right">Term</th></tr></thead><tbody></tbody></table>
+        <p class="small wt-empty" style="margin-bottom:0">Press <b>Walk</b> or <b>Next element</b> to start.</p>
+      </div>
+      <div class="card eqcard" hidden><h3>Build the equation</h3>
+                <div class="eqlines"></div>
+        ${nz.d !== 1 ? `<p class="small">Last line: we divided by ${M(fmtN(nz.d))} to make the numbers smaller and the first coefficient positive. Same equation, fewer mistakes.</p>` : ''}
+      </div>
+      ${k.likeTerms ? `<div class="callout eqx" hidden><b>Like terms</b>Resistors on the same branch carry the same current, so their terms combine: ${M('R_a I + R_b I = (R_a + R_b)\\,I')}.</div>` : ''}
+      ${sharedE.length ? `<div class="callout eqx" hidden><b>Shared battery</b>${sharedE.map(t => elM(t.e)).join(', ')} sits in a branch that belongs to two loops. It appears in both loop equations, and its sign in each depends only on which plate you reach first <i>in that walk</i>.</div>` : ''}
+      <div class="callout warn eqx" hidden><b>Common trap</b>The sign of an ${M('IR')} term depends only on whether you walk <b>with</b> or <b>against</b> that current's <b>arrow</b>. It doesn't depend on the battery nearby or on which way the current "really" flows.</div>
+    </div></div></div>`;
+  const v = view($('.host', el), { arrows: 'assumed', loops: [l], startFlag: k.route.pts[0] });
+  v.showBand(l);
+  v.focusRoute(k.items.map(it => it.b), loopNodes(l), k.route);
+  const tour = new Tour(v, k.route, { color });
+  onLeave(() => tour.stop());
+  tour.place(0);
+  const tbody = $('tbody', el);
+  let shown = 0, busy = false;
+  const elems = k.route.elems;
+  function rowHTML(i, guess) {
+    const t = k.terms[i];
+    const verdict = guess === undefined ? '' : guess === t.sign ? '<span class="badge up">you got it</span> ' : `<span class="badge down">not quite: it's ${t.sign < 0 ? '−' : '+'}</span> `;
+    return `<td class="n">${i + 1}</td><td>${valM(t.e)}</td><td class="why">${verdict}${termWhy(t)}</td><td class="term">${M(termTex(t, true, false))}<div class="small">${M(termTex(t, false, false))}</div></td>`;
+  }
+  function addRow(i, guess) {
+    const tr = document.createElement('tr'); tr.className = 'new'; tr.dataset.el = k.terms[i].e.id;
+    tr.innerHTML = rowHTML(i, guess);
+    tr.addEventListener('mouseenter', () => v.hot(tr.dataset.el)); tr.addEventListener('mouseleave', () => v.hot(null));
+    tbody.appendChild(tr);
+    $$('tr', tbody).forEach(r => r.classList.toggle('cur', r === tr));
+    $('.wt-empty', el).hidden = true;
+  }
+  function ask(i) {
+    return new Promise(res => {
+      const tr = document.createElement('tr'); tr.className = 'new cur';
+      tr.innerHTML = `<td class="n">${i + 1}</td><td>${valM(k.terms[i].e)}</td><td class="why">Rise or drop? Pick the sign:</td><td class="term"><button class="btn" data-g="1">+</button> <button class="btn" data-g="-1">−</button></td>`;
+      tbody.appendChild(tr); $('.wt-empty', el).hidden = true;
+      v.hot(k.terms[i].e.id);
+      tr.addEventListener('click', e => { const bt = e.target.closest('[data-g]'); if (!bt) return; tr.remove(); v.hot(null); res(+bt.dataset.g); });
+    });
+  }
+  function showEq() {
+    const ec = $('.eqcard', el); if (!ec.hidden) return;
+    ec.hidden = false; $('.eqlines', el).innerHTML = mlines(lines, true);
+    $$('.eqx', el).forEach(x => (x.hidden = false));
+    $$('tr', tbody).forEach(r => r.classList.remove('cur'));
+  }
+  async function stepOnce() {
+    if (busy) return false;
+    if (shown >= elems.length) { busy = true; await tour.animateTo(k.route.len); busy = false; showEq(); return false; }
+    busy = true;
+    const i = shown, r = elems[i];
+    const tok = tour.token + 1;
+    if ($('.quiz', el).checked) {
+      await tour.animateTo(Math.max(0, r.s - r.h - 16));
+      if (tour.token !== tok) { busy = false; return false; }
+      const g = await ask(i);
+      await tour.animateTo(r.s + r.h + 16);
+      addRow(i, g);
+    } else {
+      const ok = await tour.animateTo(r.s + r.h + 16);
+      if (!ok) { busy = false; return false; }
+      addRow(i);
+    }
+    shown++; busy = false;
+    if (shown === elems.length) { busy = true; await tour.animateTo(k.route.len); busy = false; showEq(); }
+    return shown < elems.length;
+  }
+  function reset() { tour.stop(); busy = false; shown = 0; tbody.innerHTML = ''; $('.wt-empty', el).hidden = false; $('.eqcard', el).hidden = true; $$('.eqx', el).forEach(x => (x.hidden = true)); tour.place(0); v.hot(null); }
+  el.addEventListener('click', async e => {
+    const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+    if (a === 'step') stepOnce();
+    if (a === 'walk') { if (shown >= elems.length) reset(); while (await stepOnce()); }
+    if (a === 'reset') reset();
+    if (a === 'all') { tour.stop(); busy = false; tbody.innerHTML = ''; for (let i = 0; i < elems.length; i++) addRow(i); shown = elems.length; tour.place(k.route.len); showEq(); }
+  });
+  $('.quiz', el).addEventListener('change', e => { S.quiz = e.target.checked; });
+}
+
+/* ---------- All equations ---------- */
+function eqKindLabel(e) {
+  return e.kind === 'J' ? `junction ${e.src.node.id}` : S.circ.nL === 1 ? 'loop' : `loop ${e.src.l + 1}`;
+}
+function systemTex() {
+  const m = S.model, nB = S.circ.nB;
+  const A = m.eqs.map(e => e.c.map(fmtN).join(' & ')).join(' \\\\ ');
+  const X = [...Array(nB).keys()].map(Itex).join(' \\\\ ');
+  const B = m.eqs.map(e => fmtN(e.r)).join(' \\\\ ');
+  return `\\begin{bmatrix} ${A} \\end{bmatrix} \\begin{bmatrix} ${X} \\end{bmatrix} = \\begin{bmatrix} ${B} \\end{bmatrix}`;
+}
+function pgSystem(el) {
+  const c = S.circ, m = S.model;
+  el.innerHTML = `<div class="inner">${header(kick('Collect the equations'), `${c.nB} equations, ${c.nB} unknowns`, `Here is everything the two rules gave us. Now it's pure algebra, and the physics is done.`)}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
+    <div class="txt">
+      <div class="card"><h3>The system</h3>
+        ${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
+      </div>
+      <div class="card soft"><h3>Same thing as a matrix</h3>
+        <p class="small" style="margin-top:0">Each row is one equation, each column belongs to one current. A computer would solve this in a microsecond. We'll do it by hand.</p>
+        <div style="text-align:center">${MD(systemTex())}</div>
+      </div>
+      <div class="callout"><b>The plan</b>${m.indep.length ? `First use the junction ${m.indep.length === 1 ? 'equation' : 'equations'} to replace ${m.indep.length === 1 ? 'one current' : 'some currents'} (all coefficients there are ±1, so that's easy). ` : ''}Then eliminate currents one at a time until one equation with one unknown is left. Finally work backwards.</div>
+    </div></div></div>`;
+  view($('.host', el), { arrows: 'assumed', loops: true });
+}
+
+/* ---------- Solve ---------- */
+function pgSolve(el) {
+  const c = S.circ, m = S.model, steps = m.solve.steps;
+  const found = {};
+  el.innerHTML = `<div class="inner">${header(kick('Solve'), c.nB === 1 ? `Solve for ${IM(0)}` : 'Solve the system step by step', c.nB === 1 ? 'One equation with one unknown: just divide.' : 'Substitute, eliminate, then work backwards. Reveal one step at a time and try to do each step yourself first.')}
+    <div class="split" style="grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)">
+      <div class="fig"><div class="card"><h3>Equations</h3>${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
+        <h3 style="margin-top:14px">Found so far</h3><div class="found result-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div></div></div>
+      <div class="txt"><div class="steps"></div>
+        <div class="row ctl"><button class="btn primary" data-act="next">Next step</button><button class="btn ghost" data-act="all">Show all steps</button><span class="small cnt"></span></div>
+        <div class="final" hidden></div>
+      </div>
+    </div></div>`;
+  const host = $('.steps', el);
+  const renderFound = () => {
+    $('.found', el).innerHTML = c.branches.map((_, b) => `<div class="res" style="border-left-color:${curColor(b)}">${found[b] === undefined ? M(`${Itex(b)} = \\;?`) : M(`${Itex(b)} = ${fmtN(found[b])}\\unit{A}`)}</div>`).join('');
+  };
+  let shown = 0;
+  const show = (i, fresh) => {
+    const st = steps[i];
+    const title = c.nB === 1 && st.kind === 'one' ? `Solve for ${IM(st.v)}` : st.title;
+    const d = document.createElement('div'); d.className = 'card step-card' + (fresh ? ' fresh' : ''); d.style.marginBottom = '14px';
+    d.innerHTML = `<h3><span class="num">Step ${i + 1}</span>${title}</h3><p>${st.note}</p>${st.blocks.map(bl => `<div class="blk">${bl.head ? `<div class="blk-head">${bl.head}</div>` : ''}${mlines(bl.lines)}</div>`).join('')}`;
+    host.appendChild(d);
+    if (st.kind === 'one') found[st.v] = m.solve.values[st.v];
+    if (st.kind === 'back') m.solve.values.forEach((x, b) => (found[b] = x));
+    renderFound();
+    if (fresh) d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const finish = () => {
+    $('.ctl', el).hidden = true;
+    const neg = m.sol.map((x, b) => (x < 0 ? b : -1)).filter(b => b >= 0);
+    const f = $('.final', el); f.hidden = false;
+    f.innerHTML = `<div class="card"><h3>Result</h3><div class="result-grid">${m.sol.map((x, b) => `<div class="res" style="border-left-color:${curColor(b)}"><div class="big">${M(`\\boxed{${Itex(b)} = ${fmtN(x)}\\unit{A}}`)}</div></div>`).join('')}</div>
+      ${neg.length ? `<div class="callout warn" style="margin-top:12px"><b>Negative ${neg.length === 1 ? 'answer' : 'answers'}</b>${neg.map(IM).join(', ')} came out negative. Nothing went wrong: ${neg.length === 1 ? 'that current flows' : 'those currents flow'} <b>against</b> the arrow we drew. The next page shows the real directions.</div>` : '<p class="small">All positive: every arrow guess was right.</p>'}</div>`;
+    f.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const upd = () => { $('.cnt', el).textContent = `${shown} of ${steps.length} shown`; if (shown >= steps.length) finish(); };
+  show(0, false); shown = 1; renderFound(); upd();
+  el.addEventListener('click', e => {
+    const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+    if (a === 'next' && shown < steps.length) { show(shown, true); shown++; upd(); }
+    if (a === 'all') { while (shown < steps.length) { show(shown, false); shown++; } upd(); }
+  });
+}
+
+/* ---------- Read the answer ---------- */
+function pgAnswer(el) {
+  const c = S.circ, m = S.model;
+  const pw = powerTable(c);
+  const differs = !S.dirs.every((d, b) => d === c.dir0[b]);
+  el.innerHTML = `<div class="inner">${header(kick('Read the answer'), 'What the numbers mean', 'The sign of each answer tells us the real direction. Watch the current flow: the dots move the way the current really goes, faster where the current is bigger.')}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div>
+      <div class="row" style="margin-top:10px">
+        <div class="seg" data-g="arrows"><button data-v="assumed">Our arrows</button><button data-v="actual" class="on">Real directions</button></div>
+        <div class="seg" data-g="carrier"><button data-v="conv" class="on">Conventional current</button><button data-v="e">Electrons</button></div>
+      </div>
+      <p class="small carrier-note"></p>
+    </div>
+    <div class="txt">
+      <div class="result-grid">${m.sol.map((x, b) => `<div class="res" style="border-left-color:${curColor(b)}"><div class="big">${M(`${Itex(b)} = ${fmtN(x)}\\unit{A}`)}</div><div class="what">${x > 0 ? `Positive: flows the way the arrow points, ${actualWay(b)}.` : `Negative: really flows <b>against</b> the arrow, ${fmtN(-x)} A ${actualWay(b)}.`}</div></div>`).join('')}</div>
+      <div class="card"><h3>What are the batteries doing?</h3>
+        <ul class="hoverlist">${pw.filter(r => r.e.type === 'E').map(r => `<li data-el="${r.e.id}">${valM(r.e)}: ${r.role === 'source'
+      ? `current leaves at its <b>+</b> plate, so it is <b>delivering energy</b> (discharging).`
+      : `current is pushed in at its <b>+</b> plate, backwards. It is <b>being charged</b> by the other ${c.E.length > 2 ? 'batteries' : 'battery'}.`}</li>`).join('')}</ul>
+      </div>
+      ${differs ? `<div class="callout warn"><b>Compared with the exercise</b>You flipped some arrows, so here are the answers for the exercise's original arrows: ${c.Itrue.map((x, b) => M(`${Itex(b)} = ${fmtN(x * c.dir0[b])}\\unit{A}`)).join(', ')}. Same sizes, and the signs follow the arrows.</div>` : ''}
+      ${c.junctions.length ? `<div class="card soft"><h3>Junction check with real directions</h3>${mlines(c.junctions.map(j => { const k = junctionEquation(c, j, c.Itrue.map(x => Math.sign(x))); const ins = k.inn.map(b => fmtN(Math.abs(c.Itrue[b]))).join(' + ') || '0', outs = k.out.map(b => fmtN(Math.abs(c.Itrue[b]))).join(' + ') || '0'; return { tex: `${ins} = ${outs} \\;\\checkmark`, note: `junction ${j.id}` }; }))}<p class="small">In amperes, using the real directions: what flows in flows out.</p></div>` : ''}
+    </div></div></div>`;
+  const v = view($('.host', el), { arrows: 'actual', flow: true });
+  const note = () => { $('.carrier-note', el).innerHTML = v.o.electrons ? 'Electrons are negative, so they drift the <b>opposite</b> way to the conventional current. Physics uses conventional current: the flow of positive charge.' : 'Conventional current: the direction positive charge would move, from + to − outside a battery.'; };
+  note();
+  $$('.seg', el).forEach(sg => sg.addEventListener('click', e => {
+    const bt = e.target.closest('button'); if (!bt) return;
+    $$('button', sg).forEach(x => x.classList.toggle('on', x === bt));
+    if (sg.dataset.g === 'arrows') v.set({ arrows: bt.dataset.v }); else { v.set({ electrons: bt.dataset.v === 'e' }); note(); }
+  }));
+  $$('[data-el]', $('.txt', el)).forEach(li => { li.addEventListener('mouseenter', () => v.hot(li.dataset.el)); li.addEventListener('mouseleave', () => v.hot(null)); });
+}
+
+/* ---------- Potential map ---------- */
+function pgPotential(el) {
+  const c = S.circ;
+  const canPick = c.junctions.length > 0;
+  el.innerHTML = `<div class="inner">${header(kick('Potential map'), 'Voltage everywhere in the circuit', `Now that we know the currents, we know the voltage (potential) at every point. Pick a reference point at ${M('0\\unit{V}')}${canPick ? ': click a junction' : ''}. Colours show the height: <span style="color:var(--vhi);font-weight:700">red is high</span>, <span style="color:var(--vlo);font-weight:700">blue is low</span>.`)}
+    <div class="split"><div class="fig"><div class="card fig-card host"></div>
+      <div class="legend" style="margin-top:10px"><span class="lo"></span><div class="bar"></div><span class="hi"></span></div>
+      ${canPick ? `<div class="row" style="margin-top:10px"><span class="small">Reference (0 V):</span><div class="seg gsel">${c.junctions.map(j => `<button data-g="${j.id}">${j.id}</button>`).join('')}</div></div>` : ''}
+    </div>
+    <div class="txt">
+      <div class="card"><h3>Junction voltages</h3><div class="vlist"></div>
+        <p class="small">Changing the reference shifts every voltage by the same amount. The <b>differences</b> between points, which are what physics cares about, stay the same.</p></div>
+      <div class="card"><h3>The loop rule as a rollercoaster</h3>
+        ${c.nL > 1 ? `<div class="tabs">${c.loops.map((_, l) => `<button data-l="${l}">Loop ${l + 1}</button>`).join('')}</div>` : ''}
+        <div class="chost" style="margin-top:8px"></div>
+        <p class="small">Follow the dot around the loop: up through batteries walked from − to +, down through resistors walked with the current. It always ends at the height where it started. That <i>is</i> the loop rule: ${M('\\sum \\Delta V = 0')}.</p>
+      </div>
+    </div></div></div>`;
+  let v, tour, curL = 0;
+  const draw = () => {
+    if (!v) v = view($('.host', el), { arrows: 'actual', potential: { ground: S.ground }, onNode: canPick ? id => { S.ground = id; draw(); } : null });
+    else v.set({ potential: { ground: S.ground } });
+    const P = v.P;
+    $('.legend .lo', el).textContent = `${fmtN(P.min)} V`; $('.legend .hi', el).textContent = `${fmtN(P.max)} V`;
+    $$('.gsel button', el).forEach(b => b.classList.toggle('on', b.dataset.g === S.ground));
+    $('.vlist', el).innerHTML = canPick ? mlines(c.junctions.map(j => ({ tex: `\\V{${j.id}} = ${fmtN(P.V[j.id])}\\unit{V}`, note: j.id === S.ground ? 'reference' : '' })))
+      : `<p>In a single loop, the marked corner is our reference: ${M('0\\unit{V}')}. The rollercoaster below shows the voltage everywhere else.</p>`;
+    coaster(curL);
+  };
+  const coaster = l => {
+    curL = l;
+    if (tour) tour.stop();
+    $$('.tabs button', el).forEach(b => { const on = +b.dataset.l === l; b.classList.toggle('on', on); b.style.background = on ? loopColor(+b.dataset.l) : ''; b.style.borderColor = on ? loopColor(+b.dataset.l) : ''; });
+    const k = S.model.kvl[l], P = v.P;
+    const marks = k.route.elems.map(r => ({ s: r.s, h: r.e.type === 'R' ? r.h : 3, label: elName(r.e), dv: r.t * elDeltaFwd(r.e, c.branches[r.b].I) }));
+    const host = $('.chost', el); host.innerHTML = '';
+    const co = new Coaster(host, coasterProfile(c, k.route, P.V[k.startNode]), { marks, color: loopColor(l) });
+    v.showBand(l);
+    tour = new Tour(v, k.route, { coaster: co, color: loopColor(l) });
+    tour.loop(150, 1000);
+  };
+  onLeave(() => tour && tour.stop());
+  $$('.gsel button', el).forEach(b => b.addEventListener('click', () => { S.ground = b.dataset.g; draw(); }));
+  $$('.tabs button', el).forEach(b => b.addEventListener('click', () => coaster(+b.dataset.l)));
+  draw();
+}
+
+/* ---------- Energy check ---------- */
+function pgEnergy(el) {
+  const c = S.circ, m = S.model, sol = m.sol;
+  const plug = e => {
+    let s = '', first = true, lhs = 0;
+    e.c.forEach((a, j) => {
+      if (!a) return;
+      lhs += a * sol[j];
+      const mag = Math.abs(a), body = (mag === 1 ? '' : fmtN(mag) + '\\cdot ') + par(sol[j]);
+      s += first ? (a < 0 ? '-' : '') + body : (a < 0 ? ' - ' : ' + ') + body;
+      first = false;
+    });
+    return `${s} = ${fmtN(lhs)} \\;\\cl{tx-good}{\\checkmark}`;
+  };
+  const pw = powerTable(c);
+  const src = pw.filter(r => r.role === 'source'), use = pw.filter(r => r.role !== 'source');
+  const tot = a => a.reduce((s, r) => s + r.P, 0);
+  const Iabs = b => Math.abs(c.Itrue[b]);
+  const row = r => {
+    const I = Iabs(r.b);
+    const f = r.e.type === 'R' ? `${Itex(r.b)}^2 ${elTex(r.e)} = ${I}^2 \\cdot ${r.e.val} = ${fmtN(r.P)}\\unit{W}` : `${elTex(r.e)}\\,|${Itex(r.b)}| = ${r.e.val} \\cdot ${I} = ${fmtN(r.P)}\\unit{W}`;
+    const role = r.role === 'heat' ? 'turned into heat' : r.role === 'source' ? '<b style="color:var(--good)">supplies</b> energy' : '<b style="color:var(--warn)">stores</b> energy (charging)';
+    return `<tr data-el="${r.e.id}"><td>${valM(r.e)}</td><td class="w">${M(f)}</td><td>${role}</td></tr>`;
+  };
+  const bar = (list, label) => `<div class="pbar"><span>${label}</span><div class="track">${list.map(r => `<span style="flex-grow:${r.P};background:${curColor(r.b)}" title="${elName(r.e)}: ${fmtN(r.P)} W">${elName(r.e)}</span>`).join('')}</div></div>`;
+  el.innerHTML = `<div class="inner">${header(kick('Double-check'), 'Check the answer two ways', 'A good habit: plug the answers back in. Then a physics check: every watt a battery delivers must be used somewhere.')}
+    <div class="two">
+      <div class="card"><h3>1 · Plug the answers into every equation</h3>
+        <p class="small" style="margin-top:0">Using ${m.sol.map((x, b) => M(`${Itex(b)} = ${fmtN(x)}`)).join(', ')}.</p>
+        ${mlines(m.eqs.map(e => ({ tex: plug(e), note: `(${e.label}) needs ${fmtN(e.r)}`, tag: '' })))}
+        ${m.redundant ? `<p class="small">The junction equation we skipped holds too: ${M(`${sumTex(m.redundant.inn)} = ${sumTex(m.redundant.out)}`)} gives ${M(`${m.redundant.inn.map(b => par(sol[b])).join(' + ') || '0'} = ${m.redundant.out.map(b => par(sol[b])).join(' + ') || '0'}`)}.</p>` : ''}
+      </div>
+      <div class="card"><h3>2 · Energy balance</h3>
+        <table class="ptable"><thead><tr><th>Element</th><th style="text-align:right">Power</th><th>Role</th></tr></thead><tbody>${pw.map(row).join('')}
+          <tr class="tot"><td>Supplied</td><td class="w">${M(`${fmtN(tot(src))}\\unit{W}`)}</td><td></td></tr>
+          <tr class="tot"><td>Used</td><td class="w">${M(`${fmtN(tot(use))}\\unit{W}`)}</td><td>${Math.abs(tot(src) - tot(use)) < 1e-9 ? '<b style="color:var(--good)">balanced ✓</b>' : ''}</td></tr></tbody></table>
+        <div class="pbars">${bar(src, 'Supplied')}${bar(use, 'Used')}</div>
+        <p class="small">Resistors use ${M('P = I^2 R')}. A battery's power is ${M('P = \\emf I')}: it supplies energy when current leaves its + plate and stores energy when current is forced in at +.</p>
+      </div>
+    </div></div>`;
+}
+
+/* ---------- Recap ---------- */
+function pgRecap(el) {
+  const c = S.circ;
+  el.innerHTML = `<div class="inner">${header(kick('Recap'), 'The recipe, for any circuit', 'You can solve every circuit made of batteries and resistors with these steps.')}
+    <div class="two">
+      <div class="card"><h3>The recipe</h3><ol class="recipe">
+        <li><div><b>Read the circuit.</b> Count junctions ${M('n')} and branches ${M('b')}. Each branch gets one unknown current.</div></li>
+        <li><div><b>Draw arrows.</b> Any direction. Pick a walking direction for each loop.</div></li>
+        <li><div><b>Junction rule</b> at ${M('n-1')} junctions: ${M('\\sum I_{\\text{in}} = \\sum I_{\\text{out}}')}.</div></li>
+        <li><div><b>Loop rule</b> for ${M('b-n+1')} loops: walk around, ${M('\\mp IR')} with/against arrows, ${M('\\pm\\emf')} from −/+ plate, and the total is zero.</div></li>
+        <li><div><b>Solve</b> the system: substitute, eliminate, work backwards.</div></li>
+        <li><div><b>Interpret</b> the signs: negative means against the arrow. <b>Check</b> by plugging in.</div></li>
+      </ol></div>
+      <div class="card"><h3>Common traps</h3><ul class="hoverlist">
+        <li>Choosing the ${M('IR')} sign from the battery or the "real" direction. It depends only on <b>walk vs. arrow</b>.</li>
+        <li>Giving a battery a sign from the current. It depends only on <b>which plate you reach first</b>.</li>
+        <li>Writing all ${M('n')} junction equations. The last one is redundant, so you'd be one equation short.</li>
+        <li>Thinking a negative answer is wrong. It just means the current flows against the arrow.</li>
+        <li>Flipping an arrow halfway. Keep one set of arrows from start to finish.</li>
+        <li>Forgetting that resistors on one branch share the same current.</li>
+      </ul></div>
+    </div>
+    <div class="card" style="margin-top:18px;text-align:center"><h3>Again?</h3>
+      <p>Every circuit is randomly generated, with whole-number answers. Practise as often as you like.</p>
+      <div class="row" style="justify-content:center">
+        <button class="btn primary big" data-act="new">New circuit, level ${S.level}</button>
+        ${S.level < 4 ? `<button class="btn big" data-act="up">Level up: ${LEVELS[S.level + 1].name}</button>` : ''}
+        <button class="btn ghost big" data-act="ex">Back to this exercise</button>
+      </div>
+      <p class="small">This circuit's code: <span class="code">${code()}</span></p>
+    </div></div>`;
+  el.addEventListener('click', e => {
+    const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
+    if (a === 'new') newCircuit(S.level);
+    if (a === 'up') newCircuit(S.level + 1);
+    if (a === 'ex') go('ex');
+  });
+}
+/* =====================================================================
+   APP — state, routing, minimap, chrome
+   ===================================================================== */
+const S = { level: 2, seed: 1, circ: null, dirs: [], loopDirs: [], model: null, page: 'ex', returnTo: null, symbol: 'iec', ground: null, answers: {}, revealed: new Set(), quiz: false, seen: new Set() };
+let PAGES = [];
+let curEl = null, mmView = null, hashLock = null;
+
+function pref(k, v) {
+  try { if (v === undefined) return localStorage.getItem('kirchhoff-' + k); localStorage.setItem('kirchhoff-' + k, v); } catch (e) { /* storage blocked */ }
+  return null;
+}
+const code = () => `L${S.level}-${S.seed}`;
+function parseCode(s) { const m = /^\s*L?\s*([1-4])\s*[-\s_.]?\s*(\d{1,6})\s*$/i.exec(s || ''); return m ? { level: +m[1], seed: +m[2] } : null; }
+const randSeed = () => 1 + Math.floor(Math.random() * 9999);
+
+function pageList() {
+  const c = S.circ, P = [
+    { id: 'ex', title: 'The exercise', build: pgExercise },
+    { id: 'rules', title: 'The two rules', build: pgRules },
+    { id: 'map', title: 'Read the circuit', build: pgMap },
+    { id: 'dirs', title: 'Choose directions', build: pgDirs },
+  ];
+  if (c.junctions.length) P.push({ id: 'kcl', title: 'Junction rule', build: pgKCL });
+  c.loops.forEach((_, l) => P.push({ id: 'loop' + (l + 1), title: c.nL === 1 ? 'Loop rule' : `Loop ${l + 1}`, build: el => pgLoop(el, l) }));
+  if (c.nB > 1) P.push({ id: 'system', title: 'All equations', build: pgSystem });
+  P.push({ id: 'solve', title: 'Solve', build: pgSolve },
+    { id: 'answer', title: 'Read the answer', build: pgAnswer },
+    { id: 'pot', title: 'Potential map', build: pgPotential },
+    { id: 'energy', title: 'Double-check', build: pgEnergy },
+    { id: 'recap', title: 'Recap', build: pgRecap });
+  return P;
+}
+
+function load(level, seed) {
+  S.level = level; S.seed = seed;
+  S.circ = generate(level, seed);
+  S.dirs = S.circ.dir0.slice(); S.loopDirs = S.circ.loops.map(() => 1);
+  S.model = buildModel(S.circ, S.dirs, S.loopDirs);
+  S.ground = S.circ.ground; S.answers = {}; S.revealed = new Set(); S.returnTo = null; S.seen = new Set();
+  PAGES = pageList();
+  drawMinimap();
+}
+function newCircuit(level) { load(level, randSeed()); go('ex', { instant: S.page === 'ex' }); }
+
+function drawMinimap() {
+  const host = $('#mmBody'); host.innerHTML = '';
+  if (mmView) mmView.unsub();
+  mmView = new CircuitView(host, S.circ, { dirs: S.circ.dir0, arrows: 'assumed' });
+}
+
+function go(id, opts = {}) {
+  let idx = PAGES.findIndex(p => p.id === id);
+  if (idx < 0) { idx = 0; id = 'ex'; }
+  const oldIdx = PAGES.findIndex(p => p.id === S.page);
+  const dir = idx >= oldIdx ? 'f' : 'b';
+  CLEAN.forEach(f => { try { f(); } catch (e) { console.error(e); } });
+  CLEAN = [];
+  if (id !== 'ex') S.returnTo = null;
+  S.page = id; S.seen.add(id);
+  const stage = $('#stage');
+  if (curEl) {
+    const old = curEl;
+    if (opts.instant) old.remove();
+    else { old.classList.add('leave-' + dir); setTimeout(() => old.remove(), 300); }
+  }
+  const el = document.createElement('section');
+  el.className = 'page' + (opts.instant ? '' : ' enter-' + dir);
+  el.setAttribute('aria-label', PAGES[idx].title);
+  stage.appendChild(el); curEl = el;
+  try { PAGES[idx].build(el); }
+  catch (e) { console.error(e); el.innerHTML = `<div class="inner"><div class="callout warn"><b>Oops</b>This step could not be drawn: ${String(e.message || e)}</div></div>`; }
+  el.addEventListener('scroll', () => $('#minimap').classList.toggle('min', el.scrollTop > 40), { passive: true });
+  $('#minimap').classList.remove('min');
+  renderChrome();
+  setHash();
+}
+const curIdx = () => PAGES.findIndex(p => p.id === S.page);
+function next() { const i = curIdx(); if (i < PAGES.length - 1) go(PAGES[i + 1].id); }
+function prev() { const i = curIdx(); if (i > 0) go(PAGES[i - 1].id); }
+
+function renderChrome() {
+  const i = curIdx(), N = PAGES.length;
+  document.body.classList.toggle('on-exercise', S.page === 'ex');
+  $('#lvlChip').textContent = `Level ${S.level} · ${LEVELS[S.level].name}`;
+  $('#progress').innerHTML = PAGES.map((p, k) => `<button class="pdot${k === i ? ' on' : S.seen.has(p.id) ? ' seen' : ''}" data-go="${p.id}" aria-label="${p.title}"><span class="tip">${k === 0 ? 'Exercise' : `${k}. ${p.title}`}</span></button>`).join('');
+  $('#where').innerHTML = i === 0 ? `<b>The exercise</b> <span class="hint">· code ${code()}</span>` : `<b>Step ${i} of ${N - 1}</b> · ${PAGES[i].title} <span class="hint">· ← → keys work too</span>`;
+  $('#prevBtn').disabled = i === 0;
+  const nb = $('#nextBtn');
+  nb.disabled = i === N - 1;
+  nb.firstChild.textContent = i === 0 ? 'Solve together' : 'Next';
+  let pill = $('#returnPill');
+  if (S.page === 'ex' && S.returnTo) {
+    const rp = PAGES.find(p => p.id === S.returnTo);
+    if (!pill) { pill = document.createElement('button'); pill.id = 'returnPill'; pill.className = 'btn primary return-pill'; document.body.appendChild(pill); pill.addEventListener('click', () => go(S.returnTo)); }
+    pill.textContent = `Back to step ${PAGES.indexOf(rp)}: ${rp.title} →`;
+    pill.hidden = false;
+  } else if (pill) pill.hidden = true;
+  $('#symBtn').textContent = S.symbol === 'iec' ? 'IEC' : 'US';
+}
+
+function setHash() {
+  const h = `#${code()}/${S.page}`;
+  if (location.hash === h) return;
+  hashLock = h;
+  try { history.replaceState(null, '', h); } catch (e) { location.hash = h; }
+}
+function fromHash() {
+  const m = /^#(L[1-4]-\d+)(?:\/([\w-]+))?$/.exec(location.hash || '');
+  if (!m) return false;
+  const p = parseCode(m[1]);
+  if (!p) return false;
+  if (!S.circ || p.level !== S.level || p.seed !== S.seed) load(p.level, p.seed);
+  go(m[2] || 'ex', { instant: true });
+  return true;
+}
+
+function copyText(txt) {
+  const done = () => toast(`Copied ${txt}`);
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast(txt); } ta.remove(); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+}
+
+function applyTheme(t) {
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+}
+function effectiveTheme() {
+  const t = document.documentElement.dataset.theme;
+  if (t) return t;
+  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function redrawAll() { drawMinimap(); go(S.page, { instant: true }); }
+
+function init() {
+  applyTheme(pref('theme'));
+  S.symbol = pref('symbol') === 'us' ? 'us' : 'iec';
+  $('#prevBtn').addEventListener('click', prev);
+  $('#nextBtn').addEventListener('click', next);
+  $('#brand').addEventListener('click', () => go('ex'));
+  $('#lvlChip').addEventListener('click', () => go('ex'));
+  $('#progress').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+  const mm = $('#minimap');
+  const openEx = () => { const from = S.page; go('ex'); S.returnTo = from; renderChrome(); };
+  mm.addEventListener('click', openEx);
+  mm.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEx(); } });
+  $('#themeBtn').addEventListener('click', () => { const t = effectiveTheme() === 'dark' ? 'light' : 'dark'; applyTheme(t); pref('theme', t); });
+  $('#symBtn').addEventListener('click', () => { S.symbol = S.symbol === 'iec' ? 'us' : 'iec'; pref('symbol', S.symbol); redrawAll(); });
+  const fs = () => { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { /* not allowed */ } };
+  $('#fsBtn').addEventListener('click', fs);
+  addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('input, textarea, select')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'f' || e.key === 'F') fs();
+    else if (e.key === 'Escape' && S.page === 'ex' && S.returnTo) go(S.returnTo);
+  });
+  addEventListener('hashchange', () => { if (location.hash === hashLock) return; fromHash(); });
+  if (!fromHash()) { load(2, randSeed()); go('ex', { instant: true }); }
+}
+init();
+</script>
+</body>
+</html>
