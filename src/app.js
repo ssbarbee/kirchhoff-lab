@@ -10,6 +10,10 @@ function pref(k, v) {
   return null;
 }
 const code = () => `L${S.level}-${S.seed}`;
+const onWeb = /^https?:$/.test(location.protocol);
+const shareLink = () => `${location.origin}${location.pathname}#${code()}`;
+/* on the web, share a full link; opened from a file, a link would not work elsewhere, so share the code */
+function shareCircuit() { if (onWeb) copyText(shareLink(), 'Link copied. Anyone who opens it gets this circuit.'); else copyText(code()); }
 function parseCode(s) { const m = /^\s*L?\s*([1-4])\s*[-\s_.]?\s*(\d{1,6})\s*$/i.exec(s || ''); return m ? { level: +m[1], seed: +m[2] } : null; }
 const randSeed = () => 1 + Math.floor(Math.random() * 9999);
 
@@ -114,8 +118,8 @@ function fromHash() {
   return true;
 }
 
-function copyText(txt) {
-  const done = () => toast(`Copied ${txt}`);
+function copyText(txt, msg) {
+  const done = () => toast(msg || `Copied ${txt}`);
   const fallback = () => { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast(txt); } ta.remove(); };
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
 }

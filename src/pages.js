@@ -69,9 +69,9 @@ function pgExercise(el) {
             <div class="rv-grid">${want.map((v, b) => `<button class="rv${S.revealed.has(b) ? ' open' : ''}" data-rv="${b}" aria-pressed="${S.revealed.has(b)}" aria-label="Reveal the answer for I${subNum(b + 1)}"><span class="rv-q">${M(Itex(b) + ' = ?')}<small>click to reveal</small></span><span class="rv-a">${M(`${Itex(b)} = ${fmtN(v)}\\unit{A}`)}</span></button>`).join('')}</div>
           </div>
         </div>
-        <div class="card soft"><h3>Circuit code</h3>
-          <p class="small" style="margin-top:0">Everyone who opens this code gets exactly this circuit, handy for a class.</p>
-          <div class="code-box"><span class="code">${code()}</span><button class="btn ghost" data-act="copy">Copy</button></div>
+        <div class="card soft"><h3>${onWeb ? 'Share this circuit' : 'Circuit code'}</h3>
+          <p class="small" style="margin-top:0">${onWeb ? 'Send the link and everyone gets exactly this circuit, handy for a class. Or type the code below.' : 'Everyone who opens this code gets exactly this circuit, handy for a class.'}</p>
+          <div class="code-box"><span class="code">${code()}</span><button class="btn ${onWeb ? '' : 'ghost'}" data-act="copy">${onWeb ? 'Copy link' : 'Copy'}</button></div>
           <div class="code-box" style="margin-top:8px"><input id="codeIn" placeholder="L3-1234" aria-label="Circuit code"><button class="btn" data-act="load">Open</button></div>
         </div>
       </div>
@@ -108,7 +108,7 @@ function pgExercise(el) {
     if (a === 'new') newCircuit(S.level);
     if (a === 'check') check();
     if (a === 'revealAll') { const show = S.revealed.size < c.nB; c.branches.forEach((_, b) => setTimeout(() => setRv(b, show), b * 110)); }
-    if (a === 'copy') copyText(code());
+    if (a === 'copy') shareCircuit();
     if (a === 'load') { const p = parseCode($('#codeIn', el).value); if (!p) { toast('Codes look like L2-4821'); return; } load(p.level, p.seed); go('ex', { instant: true }); }
   });
   function setRv(b, on) {
@@ -659,12 +659,13 @@ function pgRecap(el) {
         ${S.level < 4 ? `<button class="btn big" data-act="up">Level up: ${LEVELS[S.level + 1].name}</button>` : ''}
         <button class="btn ghost big" data-act="ex">Back to this exercise</button>
       </div>
-      <p class="small">This circuit's code: <span class="code">${code()}</span></p>
+      <p class="small">This circuit's code: <span class="code">${code()}</span>${onWeb ? ' <button class="linkbtn" data-act="share">Copy link</button>' : ''}</p>
     </div></div>`;
   el.addEventListener('click', e => {
     const a = e.target.closest('[data-act]')?.dataset.act; if (!a) return;
     if (a === 'new') newCircuit(S.level);
     if (a === 'up') newCircuit(S.level + 1);
     if (a === 'ex') go('ex');
+    if (a === 'share') shareCircuit();
   });
 }
