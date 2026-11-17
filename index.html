@@ -111,6 +111,16 @@ mtable.mt-cases mtd { padding: .16em 0; text-align: left; } mtable.mt-cases mtd:
 .icon-btn:hover { border-color: var(--line-2); color: var(--ink); }
 .icon-btn svg { width: 19px; height: 19px; }
 .icon-btn.txt { width: auto; padding: 0 10px; font-size: 13px; font-weight: 600; }
+/* phones: logo only, and the step dots become a thin bar along the bottom edge */
+@media (max-width: 640px) {
+  .topbar { gap: 8px; padding: 0 10px; }
+  .brand span { display: none; }
+  .tools { margin-left: auto; gap: 5px; }
+  .progress { position: absolute; left: 0; right: 0; bottom: -1px; gap: 2px; padding: 0 10px; }
+  .pdot { flex: 1 1 0; min-width: 0; height: 3px; }
+  .pdot:hover { transform: none; }
+  .pdot .tip { display: none; }
+}
 
 /* ===================== minimap ===================== */
 .minimap {
