@@ -49,7 +49,11 @@ function pgExercise(el) {
     <div class="ex-head"><div>
       <div class="kicker">Exercise · Level ${S.level} — ${lv.name}</div>
       <h1>${c.nB === 1 ? 'Find the current' : 'Find every current'}</h1>
-      <p class="lede">All batteries and resistors are given. Find ${unknowns} in the direction of ${c.nB === 1 ? 'its arrow' : 'the arrows'}. If a current really flows against its arrow, the answer just comes out negative.</p>
+      <p class="lede">Before solving, you need two directions, and they are separate choices:</p>
+      <div class="choices">
+        <div class="choice"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Current ${c.nB === 1 ? 'arrow' : 'arrows'}<small>chosen for you</small></b>We picked a direction for ${unknowns} before solving: the coloured ${c.nB === 1 ? 'arrow' : 'arrows'}. It's only a guess. If a current really flows the other way, its answer comes out negative. Answer for ${c.nB === 1 ? 'this arrow' : 'these arrows'}.</div>
+        <div class="choice"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>Loop ${c.nL === 1 ? 'direction' : 'directions'}<small>your choice</small></b>Pick which way to walk around ${c.nL === 1 ? 'the loop' : 'each loop'} when you add up voltages. It doesn't have to match the current arrows, and it doesn't change the answers.</div>
+      </div>
     </div>
     <div class="ex-actions"><button class="btn big" data-act="new" title="Same level, new numbers (N)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>New circuit</button><button class="btn primary big" data-act="solve">Let's solve it together <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>
     <div class="ex-grid">
