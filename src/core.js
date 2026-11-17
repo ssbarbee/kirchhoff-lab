@@ -35,7 +35,7 @@ const TeX = (() => {
   const OPS = { cdot: '⋅', times: '×', pm: '±', mp: '∓', to: '→', rightarrow: '→', leftarrow: '←', Rightarrow: '⇒', Leftarrow: '⇐', Leftrightarrow: '⇔', implies: '⟹', approx: '≈', neq: '≠', ne: '≠', le: '≤', leq: '≤', ge: '≥', geq: '≥', equiv: '≡', cdots: '⋯', ldots: '…', dots: '…', uparrow: '↑', downarrow: '↓', circlearrowright: '↻', circlearrowleft: '↺', checkmark: '✓', propto: '∝', mid: '∣', colon: ':', langle: '⟨', rangle: '⟩', div: '÷', ast: '∗' };
   const LARGE = { sum: '∑', prod: '∏' };
   const SPACES = { ',': '0.1667em', ':': '0.2222em', ';': '0.2778em', ' ': '0.25em', quad: '1em', qquad: '2em', enspace: '0.5em', '!': '0em' };
-  const RAW = new Set(['text', 'textbf', 'mathrm', 'unit', 'cl', 'I', 'R', 'E', 'V', 'J', 'begin', 'end']);
+  const RAW = new Set(['text', 'textbf', 'note', 'mathrm', 'unit', 'cl', 'I', 'R', 'E', 'V', 'J', 'begin', 'end']);
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   function tokenize(src) {
@@ -167,6 +167,7 @@ const TeX = (() => {
         case 'sqrt': return W(`<msqrt>${arg()}</msqrt>`);
         case 'text': return W(`<mtext>${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
         case 'textbf': return W(`<mtext class="tx-bf">${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
+        case 'note': return W(`<mtext class="tx-note">${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
         case 'mathrm': { const r = rawArg(); return W(r.length === 1 ? `<mi mathvariant="normal">${esc(r)}</mi>` : `<mi>${esc(r)}</mi>`); }
         case 'unit': return W(`<mrow><mspace width="0.17em"/><mi mathvariant="normal" class="unit">${esc(rawArg())}</mi></mrow>`);
         case 'cl': { const cls = rawArg(); return W(`<mrow class="${esc(cls)}">${arg()}</mrow>`); }

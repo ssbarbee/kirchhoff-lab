@@ -436,24 +436,29 @@ function pgLoop(el, l) {
 function eqKindLabel(e) {
   return e.kind === 'J' ? `junction ${e.src.node.id}` : S.circ.nL === 1 ? 'loop' : `loop ${e.src.l + 1}`;
 }
-function systemTex() {
-  const m = S.model, nB = S.circ.nB;
-  const A = m.eqs.map(e => e.c.map(fmtN).join(' & ')).join(' \\\\ ');
-  const X = [...Array(nB).keys()].map(Itex).join(' \\\\ ');
-  const B = m.eqs.map(e => fmtN(e.r)).join(' \\\\ ');
-  return `\\begin{bmatrix} ${A} \\end{bmatrix} \\begin{bmatrix} ${X} \\end{bmatrix} = \\begin{bmatrix} ${B} \\end{bmatrix}`;
+/* a system of equations with a brace, the way it is written by hand, optional note per row */
+function systemTex(rows) {
+  return `\\begin{cases} ${rows.map(r => `${r.lhs} = ${r.rhs}${r.note ? ` & \\note{${r.note}}` : ''}`).join(' \\\\ ')} \\end{cases}`;
+}
+function systemRows(stage) {
+  const m = S.model;
+  return m.eqs.map(e => {
+    if (stage === 'tidy') return { lhs: texLHS(e.c), rhs: fmtN(e.r), note: `(${e.label})` };
+    const note = stage === 'sym' ? eqKindLabel(e) : '';
+    if (e.kind === 'J') return { lhs: texLHS(e.c), rhs: fmtN(e.r), note };
+    return { lhs: e.src.terms.map((t, i) => termTex(t, stage === 'sym', i === 0)).join(''), rhs: '0', note };
+  });
 }
 function pgSystem(el) {
   const c = S.circ, m = S.model;
-  el.innerHTML = `<div class="inner">${header(kick('Collect the equations'), `${c.nB} equations, ${c.nB} unknowns`, `Here is everything the two rules gave us. Now it's pure algebra, and the physics is done.`)}
+  el.innerHTML = `<div class="inner">${header(kick('Collect the equations'), `${c.nB} equations, ${c.nB} unknowns`, `Put together, the two rules give a system of equations: one equation for every unknown current. From here on it's pure algebra. The physics is done.`)}
     <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
     <div class="txt">
       <div class="card"><h3>The system</h3>
-        ${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
-      </div>
-      <div class="card soft"><h3>Same thing as a matrix</h3>
-        <p class="small" style="margin-top:0">Each row is one equation, each column belongs to one current. A computer would solve this in a microsecond. We'll do it by hand.</p>
-        <div style="text-align:center">${MD(systemTex())}</div>
+        <div class="blk"><div class="blk-head">Straight from the two rules</div><div class="sys">${MD(systemTex(systemRows('sym')))}</div></div>
+        <div class="blk"><div class="blk-head">Put in the values</div><div class="sys">${MD(systemTex(systemRows('num')))}</div></div>
+        <div class="blk"><div class="blk-head">Tidy up: plain numbers to the right, like terms together</div><div class="sys">${MD(systemTex(systemRows('tidy')))}</div></div>
+        <p class="small" style="margin-bottom:0">The loop pages show each of these steps in detail. The last system is the one we solve, with substitution and elimination.</p>
       </div>
       <div class="callout"><b>The plan</b>${m.indep.length ? `First use the junction ${m.indep.length === 1 ? 'equation' : 'equations'} to replace ${m.indep.length === 1 ? 'one current' : 'some currents'} (all coefficients there are ±1, so that's easy). ` : ''}Then eliminate currents one at a time until one equation with one unknown is left. Finally work backwards.</div>
     </div></div></div>`;
