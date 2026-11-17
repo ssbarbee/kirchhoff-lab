@@ -85,6 +85,9 @@ math[display="block"] { font-size: 1.22em; margin: .35em 0; overflow-x: auto; ov
 .tx-cancel { background: linear-gradient(to top right, transparent calc(50% - 1px), var(--bad) calc(50% - 1px), var(--bad) calc(50% + 1px), transparent calc(50% + 1px)); }
 mtable.mt-mat mtd { padding: .12em .45em; }
 mtable.mt-al mtd:nth-child(odd) { text-align: right; } mtable.mt-al mtd:nth-child(even) { text-align: left; }
+mtable.mt-cases mtd { padding: .16em 0; text-align: left; } mtable.mt-cases mtd:first-child { padding-left: .3em; } mtable.mt-cases mtd:nth-child(2) { padding-left: 1.6em; }
+.tx-note { font-family: var(--sans); font-size: .6em; color: var(--muted); }
+.sys { overflow-x: auto; padding: 2px 0; }
 
 /* ===================== top bar ===================== */
 .topbar {
@@ -150,10 +153,11 @@ body.on-exercise .minimap { opacity: 0; transform: translateY(-8px) scale(.96); 
 .lede { font-size: 17.5px; color: var(--ink-2); max-width: 74ch; margin-top: 6px; }
 .fig .circ { max-height: max(300px, calc(100vh - var(--top) - var(--bot) - 190px)); }
 .split { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.split.split-solve { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
 .fig { position: sticky; top: 0; }
 .txt > * + * { margin-top: 16px; }
 @media (max-width: 1020px) {
-  .split { grid-template-columns: 1fr; }
+  .split, .split.split-solve { grid-template-columns: minmax(0, 1fr); }
   .fig { position: static; }
   .ph { padding-right: 140px; }
   .minimap { width: 130px; }
@@ -444,7 +448,7 @@ const TeX = (() => {
   const OPS = { cdot: '⋅', times: '×', pm: '±', mp: '∓', to: '→', rightarrow: '→', leftarrow: '←', Rightarrow: '⇒', Leftarrow: '⇐', Leftrightarrow: '⇔', implies: '⟹', approx: '≈', neq: '≠', ne: '≠', le: '≤', leq: '≤', ge: '≥', geq: '≥', equiv: '≡', cdots: '⋯', ldots: '…', dots: '…', uparrow: '↑', downarrow: '↓', circlearrowright: '↻', circlearrowleft: '↺', checkmark: '✓', propto: '∝', mid: '∣', colon: ':', langle: '⟨', rangle: '⟩', div: '÷', ast: '∗' };
   const LARGE = { sum: '∑', prod: '∏' };
   const SPACES = { ',': '0.1667em', ':': '0.2222em', ';': '0.2778em', ' ': '0.25em', quad: '1em', qquad: '2em', enspace: '0.5em', '!': '0em' };
-  const RAW = new Set(['text', 'textbf', 'mathrm', 'unit', 'cl', 'I', 'R', 'E', 'V', 'J', 'begin', 'end']);
+  const RAW = new Set(['text', 'textbf', 'note', 'mathrm', 'unit', 'cl', 'I', 'R', 'E', 'V', 'J', 'begin', 'end']);
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
   function tokenize(src) {
@@ -576,6 +580,7 @@ const TeX = (() => {
         case 'sqrt': return W(`<msqrt>${arg()}</msqrt>`);
         case 'text': return W(`<mtext>${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
         case 'textbf': return W(`<mtext class="tx-bf">${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
+        case 'note': return W(`<mtext class="tx-note">${esc(rawArg()).replace(/ /g, ' ')}</mtext>`);
         case 'mathrm': { const r = rawArg(); return W(r.length === 1 ? `<mi mathvariant="normal">${esc(r)}</mi>` : `<mi>${esc(r)}</mi>`); }
         case 'unit': return W(`<mrow><mspace width="0.17em"/><mi mathvariant="normal" class="unit">${esc(rawArg())}</mi></mrow>`);
         case 'cl': { const cls = rawArg(); return W(`<mrow class="${esc(cls)}">${arg()}</mrow>`); }
@@ -2022,24 +2027,29 @@ function pgLoop(el, l) {
 function eqKindLabel(e) {
   return e.kind === 'J' ? `junction ${e.src.node.id}` : S.circ.nL === 1 ? 'loop' : `loop ${e.src.l + 1}`;
 }
-function systemTex() {
-  const m = S.model, nB = S.circ.nB;
-  const A = m.eqs.map(e => e.c.map(fmtN).join(' & ')).join(' \\\\ ');
-  const X = [...Array(nB).keys()].map(Itex).join(' \\\\ ');
-  const B = m.eqs.map(e => fmtN(e.r)).join(' \\\\ ');
-  return `\\begin{bmatrix} ${A} \\end{bmatrix} \\begin{bmatrix} ${X} \\end{bmatrix} = \\begin{bmatrix} ${B} \\end{bmatrix}`;
+/* a system of equations with a brace, the way it is written by hand, optional note per row */
+function systemTex(rows) {
+  return `\\begin{cases} ${rows.map(r => `${r.lhs} = ${r.rhs}${r.note ? ` & \\note{${r.note}}` : ''}`).join(' \\\\ ')} \\end{cases}`;
+}
+function systemRows(stage) {
+  const m = S.model;
+  return m.eqs.map(e => {
+    if (stage === 'tidy') return { lhs: texLHS(e.c), rhs: fmtN(e.r), note: `(${e.label})` };
+    const note = stage === 'sym' ? eqKindLabel(e) : '';
+    if (e.kind === 'J') return { lhs: texLHS(e.c), rhs: fmtN(e.r), note };
+    return { lhs: e.src.terms.map((t, i) => termTex(t, stage === 'sym', i === 0)).join(''), rhs: '0', note };
+  });
 }
 function pgSystem(el) {
   const c = S.circ, m = S.model;
-  el.innerHTML = `<div class="inner">${header(kick('Collect the equations'), `${c.nB} equations, ${c.nB} unknowns`, `Here is everything the two rules gave us. Now it's pure algebra, and the physics is done.`)}
+  el.innerHTML = `<div class="inner">${header(kick('Collect the equations'), `${c.nB} equations, ${c.nB} unknowns`, `Put together, the two rules give a system of equations: one equation for every unknown current. From here on it's pure algebra. The physics is done.`)}
     <div class="split"><div class="fig"><div class="card fig-card host"></div></div>
     <div class="txt">
       <div class="card"><h3>The system</h3>
-        ${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
-      </div>
-      <div class="card soft"><h3>Same thing as a matrix</h3>
-        <p class="small" style="margin-top:0">Each row is one equation, each column belongs to one current. A computer would solve this in a microsecond. We'll do it by hand.</p>
-        <div style="text-align:center">${MD(systemTex())}</div>
+        <div class="blk"><div class="blk-head">Straight from the two rules</div><div class="sys">${MD(systemTex(systemRows('sym')))}</div></div>
+        <div class="blk"><div class="blk-head">Put in the values</div><div class="sys">${MD(systemTex(systemRows('num')))}</div></div>
+        <div class="blk"><div class="blk-head">Tidy up: plain numbers to the right, like terms together</div><div class="sys">${MD(systemTex(systemRows('tidy')))}</div></div>
+        <p class="small" style="margin-bottom:0">The loop pages show each of these steps in detail. The last system is the one we solve, with substitution and elimination.</p>
       </div>
       <div class="callout"><b>The plan</b>${m.indep.length ? `First use the junction ${m.indep.length === 1 ? 'equation' : 'equations'} to replace ${m.indep.length === 1 ? 'one current' : 'some currents'} (all coefficients there are ±1, so that's easy). ` : ''}Then eliminate currents one at a time until one equation with one unknown is left. Finally work backwards.</div>
     </div></div></div>`;
@@ -2051,7 +2061,7 @@ function pgSolve(el) {
   const c = S.circ, m = S.model, steps = m.solve.steps;
   const found = {};
   el.innerHTML = `<div class="inner">${header(kick('Solve'), c.nB === 1 ? `Solve for ${IM(0)}` : 'Solve the system step by step', c.nB === 1 ? 'One equation with one unknown: just divide.' : 'Substitute, eliminate, then work backwards. Reveal one step at a time and try to do each step yourself first.')}
-    <div class="split" style="grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)">
+    <div class="split split-solve">
       <div class="fig"><div class="card"><h3>Equations</h3>${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
         <h3 style="margin-top:14px">Found so far</h3><div class="found result-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div></div></div>
       <div class="txt"><div class="steps"></div>
