@@ -153,10 +153,11 @@ body.on-exercise .minimap { opacity: 0; transform: translateY(-8px) scale(.96); 
 .lede { font-size: 17.5px; color: var(--ink-2); max-width: 74ch; margin-top: 6px; }
 .fig .circ { max-height: max(300px, calc(100vh - var(--top) - var(--bot) - 190px)); }
 .split { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.split.split-solve { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
 .fig { position: sticky; top: 0; }
 .txt > * + * { margin-top: 16px; }
 @media (max-width: 1020px) {
-  .split { grid-template-columns: 1fr; }
+  .split, .split.split-solve { grid-template-columns: minmax(0, 1fr); }
   .fig { position: static; }
   .ph { padding-right: 140px; }
   .minimap { width: 130px; }

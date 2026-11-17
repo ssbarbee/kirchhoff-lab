@@ -470,7 +470,7 @@ function pgSolve(el) {
   const c = S.circ, m = S.model, steps = m.solve.steps;
   const found = {};
   el.innerHTML = `<div class="inner">${header(kick('Solve'), c.nB === 1 ? `Solve for ${IM(0)}` : 'Solve the system step by step', c.nB === 1 ? 'One equation with one unknown: just divide.' : 'Substitute, eliminate, then work backwards. Reveal one step at a time and try to do each step yourself first.')}
-    <div class="split" style="grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)">
+    <div class="split split-solve">
       <div class="fig"><div class="card"><h3>Equations</h3>${mlines(m.eqs.map(e => ({ tex: texEq(e), note: eqKindLabel(e), tag: `(${e.label})` })))}
         <h3 style="margin-top:14px">Found so far</h3><div class="found result-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div></div></div>
       <div class="txt"><div class="steps"></div>
