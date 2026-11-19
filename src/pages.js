@@ -41,6 +41,10 @@ function loopNodes(l) { const c = S.circ; return [...new Set(c.loops[l].items.fl
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); }
 
 /* ---------- Exercise ---------- */
+/* The About text is written in index.html so search engines and readers without JavaScript see it.
+   Take it out of the page shell once, then show it under the exercise. */
+const ABOUT = (() => { const a = $('.about'); if (!a) return ''; const html = a.outerHTML; a.closest('.page').remove(); return html; })();
+
 function pgExercise(el) {
   const c = S.circ, lv = LEVELS[S.level];
   const want = c.Itrue.map((v, b) => v * c.dir0[b]);
@@ -78,7 +82,7 @@ function pgExercise(el) {
           <div class="code-box" style="margin-top:8px"><input id="codeIn" placeholder="L3-1234" aria-label="Circuit code"><button class="btn" data-act="load">Open</button></div>
         </div>
       </div>
-    </div></div>`;
+    </div>${ABOUT}</div>`;
   view($('.hero-host', el), { dirs: c.dir0, arrows: 'assumed' });
   const fb = $('.fb', el);
   const parse = s => { s = String(s).replace(/[−–]/g, '-').replace(',', '.').replace(/[aA\s]/g, ''); if (!s) return null; const v = Number(s); return Number.isFinite(v) ? v : NaN; };
